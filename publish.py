@@ -216,8 +216,9 @@ def main() -> int:
     else:
         print("本地版本：%s" % token)
         print("线上版本：%s" % (live_token or "取不到"))
-        print("jsDelivr 对已缓存的地址会锁最长 12 小时，加 ?t= 之类的参数也绕不过（实测）。")
-        print("所以这一版最晚半天后才会出现在电视上。配置本身没问题，只是到得晚。")
+        print("jsDelivr 边缘缓存会滞后：实测通常十几分钟到半小时，最坏可能到 12 小时。")
+        print("清缓存接口（purge.jsdelivr.net）对它无效，加 ?t= 也绕不过，这是平台行为。")
+        print("配置本身没问题，只是到得晚；不用重跑，也不用改地址。")
     return 0
 
 
