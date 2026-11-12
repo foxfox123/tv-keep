@@ -30,45 +30,13 @@ if errorlevel 2 echo     ^(跌幅过大，已保留上次结果^)
 if errorlevel 1 if not errorlevel 2 echo     ^(本次没产出，保留上次结果^)
 
 echo.
-echo [3/3] 推送上线...
-if exist "cf\.token" (
-  python cf\push.py
-  if errorlevel 1 (
-    echo     直连不通，改用 Cloudflare API 通道再试一次...
-    python cf\push.py --via wrangler
-    if errorlevel 1 echo     ^(两条通道都没成功；本地产物已更新，下次跑会自动补推^)
-  )
-  goto :done
+echo [3/3] 发布上线（推 GitHub + 清 jsDelivr 缓存）...
+python publish.py
+if errorlevel 1 (
+  echo.
+  echo [提示] 发布没成功。本地产物已更新，电视上还是上一次的内容，
+  echo        下次跑会自动补推，不影响你看电视。
 )
 
-if exist ".git" (
-  git add dist
-  git diff --staged --quiet
-  if not errorlevel 1 (
-    echo 内容没有变化，不用推送。
-    goto :done
-  )
-  git -c user.name="tv-keep" -c user.email="tv-keep@local" commit -m "chore: local refresh %date% %time%"
-  if errorlevel 1 (
-    echo [提示] 提交失败，通常是本机 git 还没配置身份。
-    goto :done
-  )
-  git push
-  if errorlevel 1 (
-    echo.
-    echo [提示] 推送失败。第一次用请先执行：
-    echo     git remote add origin https://github.com/你的用户名/tv-keep.git
-    echo     git push -u origin main
-  ) else (
-    echo 已推送，电视上的地址不变。
-  )
-  goto :done
-)
-
-echo 还没配推送目标，二选一：
-echo   用 Cloudflare：按 README 的「Cloudflare 部署」做完，把 token 写进 cf\.token
-echo   用 GitHub    ：把整个目录推送到你的仓库，再跑一次本脚本
-
-:done
 echo.
 pause
