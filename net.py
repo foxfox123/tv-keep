@@ -190,40 +190,83 @@ def fetch_text(
     return raw.decode("utf-8", "replace"), code, ms
 
 
-def _probe_leech(
-    url: str, timeout: float, sample: int, max_seconds: float, headers: dict | None
-) -> dict:
-    """真正读一段字节，测首字节时间与速率。"""
+def _seg_kbps(seg: str, duration: float, timeout: float, headers: dict | None) -> dict:
+    """按「分片字节数 ÷ 分片时长」算真实码率。
+
+    分片里装的就是那几秒的码流，大小是固定的，跟本机网速无关。
+    原来拿「下载吞吐」当码率，等于在测自己家宽带：200KB 在 0.3 秒内下完
+    就记 0 码率，于是 8Mbps 的高清源被判成"没码率"扔掉，只剩 300kbps
+    的糊源活下来。这是画质差的根本原因，不是源的问题。
+    """
     out = {"ok": False, "kbps": 0, "ttfb_ms": None, "note": ""}
+    size = 0
     t0 = time.time()
     try:
-        with urllib.request.urlopen(_request(url, headers), timeout=timeout, context=_CTX) as r:
-            first = r.read(4096)
+        req = _request(seg, headers)
+        req.method = "HEAD"
+        with urllib.request.urlopen(req, timeout=timeout, context=_CTX) as r:
             out["ttfb_ms"] = round((time.time() - t0) * 1000)
-            total = len(first)
-            if total < 188 and not first:
-                out["note"] = "空响应"
-                return out
-            while total < sample:
-                if time.time() - t0 > max_seconds:
-                    break
-                chunk = r.read(32768)
-                if not chunk:
-                    break
-                total += len(chunk)
-            dt = max(time.time() - t0, 0.001)
-            if total < 8192 and time.time() - t0 > max_seconds:
-                out["note"] = "速率过低"
-            if total < 2048:
-                out["note"] = out["note"] or "数据过少"
-                return out
-            out["ok"] = True
-            if dt > 0.3:
-                out["kbps"] = round(total * 8 / dt / 1000)
+            size = int(r.headers.get("Content-Length") or 0)
+    except Exception:  # noqa: BLE001
+        size = 0
+    if size <= 0:
+        t0 = time.time()
+        try:
+            with urllib.request.urlopen(_request(seg, headers), timeout=timeout, context=_CTX) as r:
+                out["ttfb_ms"] = round((time.time() - t0) * 1000)
+                total = 0
+                while total < 8_000_000:
+                    chunk = r.read(65536)
+                    if not chunk:
+                        break
+                    total += len(chunk)
+                size = total
+        except Exception as e:  # noqa: BLE001
+            out["note"] = _short(e)
             return out
-    except Exception as e:  # noqa: BLE001
-        out["note"] = _short(e)
+    if size < 2048:
+        out["note"] = "分片过小，疑似无效源"
         return out
+    out["ok"] = True
+    if duration and duration > 0:
+        out["kbps"] = int(round(size * 8 / duration / 1000))
+        out["note"] = "%.1fs 分片 %.0fKB" % (duration, size / 1024)
+    else:
+        dt = max(time.time() - t0, 0.05)
+        out["kbps"] = int(round(size * 8 / dt / 1000))
+        out["note"] = "无分片时长，按吞吐估算"
+    return out
+
+
+def _first_duration(playlist: bytes) -> float:
+    """取第一个分片声明的时长（秒）。真实码率就靠它。"""
+    m = re.search(rb"#EXTINF:\s*([\d.]+)", playlist)
+    try:
+        return float(m.group(1)) if m else 0.0
+    except ValueError:
+        return 0.0
+
+
+def _best_variant(playlist: bytes):
+    """master playlist 里挑码率最高的一路，返回 (uri, bandwidth_bps, height)。"""
+    try:
+        lines = playlist.decode("utf-8", "replace").splitlines()
+    except Exception:  # noqa: BLE001
+        return None
+    best = None
+    for i, line in enumerate(lines):
+        if not line.startswith("#EXT-X-STREAM-INF"):
+            continue
+        uri = next((x.strip() for x in lines[i + 1:] if x.strip() and not x.startswith("#")), None)
+        if not uri:
+            continue
+        bw = re.search(r"BANDWIDTH=(\d+)", line)
+        rs = re.search(r"RESOLUTION=(\d+)x(\d+)", line)
+        b = int(bw.group(1)) if bw else 0
+        h = int(rs.group(2)) if rs else 0
+        if best is None or b > best[1]:
+            best = (uri, b, h)
+    return best
 
 
 def _first_uri(playlist: bytes) -> str | None:
@@ -255,7 +298,8 @@ def probe_stream(
     deep=False 只验证播放列表本身，不去拉分片。在境外机器上跑时用它：
     分片能不能拉，很大程度取决于 CDN 怎么给你回源，海外测出来的结果对国内没意义。
     """
-    info = {"ok": False, "cls": "dead", "kind": "dead", "kbps": 0, "ttfb_ms": None, "note": ""}
+    info = {"ok": False, "cls": "dead", "kind": "dead", "kbps": 0, "height": 0,
+            "ttfb_ms": None, "note": ""}
     low = url.lower()
     if not low.startswith(("http://", "https://")):
         info["note"] = "非 http(s)，客户端拉不到"
@@ -268,7 +312,26 @@ def probe_stream(
             info["ttfb_ms"] = round((time.time() - t0) * 1000)
             if head.lstrip()[:7].upper() == b"#EXTM3U":
                 body = head + r.read(96 * 1024)
+                base = r.geturl()
                 info["kind"] = "playlist"
+                # master playlist：挑码率最高的一路，顺带拿到分辨率。
+                # 电视台的真高清基本都挂在这种多码率列表后面。
+                if b"#EXT-X-STREAM-INF" in body:
+                    var = _best_variant(body)
+                    if var:
+                        v_uri, v_bw, v_h = var
+                        try:
+                            with urllib.request.urlopen(
+                                    _request(urllib.parse.urljoin(base, v_uri), headers),
+                                    timeout=timeout, context=_CTX) as r2:
+                                base = r2.geturl()
+                                body = r2.read(96 * 1024)
+                        except Exception:  # noqa: BLE001
+                            pass
+                        if v_bw:
+                            info["kbps"] = int(v_bw) // 1000
+                        if v_h:
+                            info["height"] = v_h
                 # 无信号/广告占位：短循环列表
                 segs = body.count(b"#EXTINF")
                 if b"#EXT-X-ENDLIST" in body and segs <= 3:
@@ -281,11 +344,11 @@ def probe_stream(
                 if not deep:
                     info.update(ok=True, cls="alive", note="播放列表正常")
                     return info
-                seg = urllib.parse.urljoin(r.geturl(), uri)
-                leech = _probe_leech(seg, timeout, sample, max_seconds, headers)
+                seg = urllib.parse.urljoin(base, uri)
+                leech = _seg_kbps(seg, _first_duration(body), timeout, headers)
                 info["ok"] = leech["ok"]
                 info["cls"] = "alive" if leech["ok"] else "suspect"
-                info["kbps"] = leech["kbps"]
+                info["kbps"] = leech["kbps"] or info["kbps"]
                 info["note"] = leech["note"] or "HLS 分片正常"
                 if leech["ttfb_ms"] and not info["ttfb_ms"]:
                     info["ttfb_ms"] = leech["ttfb_ms"]
@@ -306,7 +369,7 @@ def probe_stream(
                 return info
             info["ok"] = True
             info["cls"] = "alive"
-            info["kbps"] = round(total * 8 / dt / 1000) if dt > 0.3 else 0
+            info["kbps"] = round(total * 8 / dt / 1000) if dt > 0.05 else 0
             info["note"] = "裸流正常"
             return info
     except Exception as e:  # noqa: BLE001

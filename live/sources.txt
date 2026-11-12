@@ -11,6 +11,8 @@
 # 国内网络对 raw 的解析经常失败，镜像通常没问题；万一镜像挂了，脚本会自动换回 raw 重试。
 
 饭太硬 | https://cdn.jsdelivr.net/gh/fanmingming/live@main/tv/m3u/index.m3u
+饭太硬-高清合集 | https://cdn.jsdelivr.net/gh/fanmingming/live@main/tv/m3u/itv.m3u
+szyyds-大合集 | https://szyyds.cn/tv/live/x.txt
 iptv-org-中国 | https://iptv-org.github.io/iptv/countries/cn.m3u
 vbskycn-iptv4 | https://cdn.jsdelivr.net/gh/vbskycn/iptv@master/tv/iptv4.m3u
 zhoujie218-iptv4 | https://live.zhoujie218.top/tv/iptv4.txt

@@ -22,7 +22,9 @@ https://cdn.jsdelivr.net/gh/foxfox123/tv-keep/dist/multi.json
 | 直播（m3u） | `https://cdn.jsdelivr.net/gh/foxfox123/tv-keep/dist/live.m3u` |
 | 直播（txt，兼容老壳） | `https://cdn.jsdelivr.net/gh/foxfox123/tv-keep/dist/live.txt` |
 
-**影视仓里的动作**：设置 → 配置地址 → 粘贴第一条 → 保存 → 回首页进「线路选择」。直播不用单独填，点播配置的 `lives` 里已经内嵌了你自己那条 `live.m3u`。
+**影视仓 / 宝盒里的动作**：设置 → 配置地址 → 影视仓填第一条（多仓，20 条线路）；只认单仓的壳（宝盒一类）填第二条 `tvbox.json` → 保存 → 回首页看分类。直播不用单独填，点播配置的 `lives` 里已经内嵌了你自己那条 `live.m3u`。
+
+> 两份配置的分工是必须的：**单仓自带 spider 和解析器**，能独立跑；**多仓靠顶层字段带一份**，切进子仓后子仓自己的 spider 生效。缺任何一边，壳里就会出现"配置导入成功、点进去没内容"。
 
 > 这个地址永远不用再改。源挂了是后台换，不是让你重新找地址。
 

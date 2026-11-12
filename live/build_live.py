@@ -253,7 +253,7 @@ def main() -> int:
 
     if mode == "off":
         for c in todo:
-            c.update(ok=True, cls="alive", kbps=0, kind="?", note="按要求未探测", ttfb=None)
+            c.update(ok=True, cls="alive", kbps=0, height=0, kind="?", note="按要求未探测", ttfb=None)
     else:
         def probe(c):
             return c, net.probe_stream(
@@ -265,6 +265,7 @@ def main() -> int:
                 c, r = fut.result()
                 c["ok"], c["cls"], c["kbps"], c["kind"], c["note"], c["ttfb"] = (
                     r["ok"], r["cls"], r["kbps"], r["kind"], r["note"], r["ttfb_ms"])
+                c["height"] = r.get("height", 0)
 
     hist = load_hist(os.path.join(args.out, cfg["out_name"] + "-hist.json"))
 

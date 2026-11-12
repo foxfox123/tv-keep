@@ -3,7 +3,7 @@
   "keep_per_channel": 6,
   "workers": 24,
   "probe_timeout": 8,
-  "min_kbps": 300,
+  "min_kbps": 1200,
   "sample_bytes": 200000,
   "max_probe_seconds": 5,
   "min_match_score": 55,
