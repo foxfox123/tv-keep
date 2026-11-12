@@ -12,3 +12,4 @@ cf/.wrangler/
 # 本地运行时产生的状态，不进仓库
 dist/*-hist.json
 dist/*-status.json
+dist/run.log
