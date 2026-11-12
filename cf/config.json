@@ -1,5 +1,12 @@
 {
+  "public_base": "https://cdn.jsdelivr.net/gh/foxfox123/tv-keep@main/dist",
+  "_说明_public_base": "电视和配置里所有地址的根。走 jsDelivr 时填 https://cdn.jsdelivr.net/gh/<用户名>/<仓库>@<分支>/dist；走 Cloudflare 时填 https://xxx.workers.dev/dist。改这里，重新跑一次 vod/build_vod.py 才会生效。",
+  "jsdelivr": {
+    "user": "foxfox123",
+    "repo": "tv-keep",
+    "branch": "main"
+  },
   "worker_url": "https://tv-keep.651914570.workers.dev",
-  "_说明": "部署好 Worker 后，把地址填到 worker_url，例如 https://tv-keep.你的子域.workers.dev（不要带结尾斜杠、不要带 /dist）",
+  "_说明_worker_url": "Cloudflare Workers 的地址。build_vod.py 里优先级低于 public_base。workers.dev 在国内被 DNS 污染，目前仅作备份记录。",
   "dist": ""
 }

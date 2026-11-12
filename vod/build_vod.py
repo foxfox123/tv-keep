@@ -70,17 +70,20 @@ def join_q(url: str, q: str) -> str:
 def guess_base() -> str:
     """本地跑的时候没人给 base_url，就自己推断一个。
 
-    优先级：cf/config.json 的 worker_url（Cloudflare 部署）→ git remote（GitHub Pages）。
+    优先级：cf/config.json 的 public_base → worker_url → git remote 推断。
     都推不出来就返回空——那只是意味着配置里不内嵌直播源，不影响其他部分。
     """
-    # 先看 Cloudflare 的配置：这一步决定 multi.json 里每条线路指向哪里，
-    # 指错了，电视上每条线路都是 404。
+    # 这一步决定 multi.json 里每条线路指向哪里，指错了电视上每条线路都是 404。
     try:
         cf = os.path.join(ROOT, "cf", "config.json")
         if os.path.exists(cf):
             with open(cf, "r", encoding="utf-8-sig") as f:
-                url = (json.load(f) or {}).get("worker_url") or ""
-            url = url.strip().rstrip("/")
+                conf = json.load(f) or {}
+            # public_base 已经是完整的 .../dist，直接可用
+            base = (conf.get("public_base") or "").strip().rstrip("/")
+            if base:
+                return base
+            url = (conf.get("worker_url") or "").strip().rstrip("/")
             if url:
                 return url + "/dist"
     except Exception:  # noqa: BLE001
