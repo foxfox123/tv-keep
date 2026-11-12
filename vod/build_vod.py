@@ -39,6 +39,7 @@ DEFAULTS = {
     "keep_sites": 90,
     "max_per_upstream": 45,
     "max_repos": 40,
+    "max_lines": 20,
     "max_expand_depth": 2,
     "max_probe_sites": 600,
     "base_url": "",
@@ -61,6 +62,20 @@ def slugify(name: str) -> str:
     stem = SLUG.sub("-", name).strip("-").lower()[:28]
     h = hashlib.md5(name.encode("utf-8")).hexdigest()[:8]
     return "%s-%s" % (stem, h) if stem else "r-%s" % h
+
+
+def short_name(label: str, n: int) -> str:
+    """多仓条目名只保留能区分的那一段。上游名字是"多仓名·分组·线路名"，
+    前缀全都一样，40 条堆在电视上根本分不清，还会被壳按宽度截成乱码。"""
+    s = re.sub(r"\s+", " ", label).strip().replace("┃", "·")
+    parts = [p.strip() for p in s.split("·") if p.strip()]
+    if parts:
+        s = parts[-1]
+        if len(s) < 4 and len(parts) > 1:
+            s = "·".join(parts[-2:])
+    if len(s) > 24:
+        s = s[:23] + "…"
+    return "%s（%d站）" % (s, n)
 
 
 def join_q(url: str, q: str) -> str:
@@ -399,19 +414,41 @@ def main() -> int:
         upstream_log.append({"线路": rp["label"], "原有": len(rp["sites"]), "存活": len(good),
                              "疑点": len(extra), "采用": len(kept), "jar": len(spiders)})
 
+    # ---- 单仓 ----
+    # 单仓必须自带 spider，否则所有 csp_ 站（要 jar 才能跑的那种，占七成以上）
+    # 一条都加载不出来；也不能只放探测通过的 py 源——影视仓/宝盒对 type:3 的
+    # .py 支持很差，表现就是"配置导入成功，但点进去没内容"。
+    # 所以挑 jar 站最多的那条上游作基底，连它的 spider 一起继承，再拿验证过的站补位。
     no_spider = sorted(alive, key=lambda s: (s["_ms"] if s["_ms"] is not None else 99999))
-    chosen = no_spider[: cfg["keep_sites"]]
+    base_body, jar_sites = {}, []
+    if repos_out:
+        pick = max(repos_out, key=lambda r: sum(
+            1 for s in r["body"]["sites"] if str(s.get("api", "")).startswith("csp_")))
+        base_body = pick["body"]
+        jar_sites = [dict(s, _cls="spider", _ok=True, _ms=None, _note="需 jar")
+                     for s in pick["body"]["sites"]
+                     if str(s.get("api", "")).startswith("csp_")]
+    seen_api = {(s["api"].lower(), str(s.get("type", "1"))) for s in jar_sites}
+    rest = [s for s in no_spider if (s["api"].lower(), str(s.get("type", "1"))) not in seen_api]
+    # jar 站占七成，剩下的留给真正探测通过的源（4K 直连那类），两边都要有
+    jar_quota = min(len(jar_sites), int(cfg["keep_sites"] * 0.7))
+    chosen = jar_sites[:jar_quota] + rest[: max(0, cfg["keep_sites"] - jar_quota)]
     if mode == "geo_safe" and len(chosen) < cfg["keep_sites"]:
         fill = sorted(unsure, key=lambda s: s["name"])[: cfg["keep_sites"] - len(chosen)]
-        chosen = chosen + fill
+        chosen = chosen + [s for s in fill
+                           if (s["api"].lower(), str(s.get("type", "1"))) not in seen_api]
     single = {
         "sites": [{k: v for k, v in s.items() if not k.startswith("_")} for s in chosen],
         "lives": lives,
-        "parses": cfg["parses"],
-        "flags": cfg["flags"],
+        "parses": base_body.get("parses") or cfg["parses"],
+        "flags": base_body.get("flags") or cfg["flags"],
         "wallpaper": "",
     }
-    print("[点播] 单仓 %d 个站，多仓 %d 条线路" % (len(single["sites"]), len(repos_out)))
+    if base_body.get("spider"):
+        single["spider"] = base_body["spider"]
+    n_jar = sum(1 for s in chosen if str(s.get("api", "")).startswith("csp_"))
+    print("[点播] 单仓 %d 个站（其中需 jar %d 个），多仓 %d 条线路"
+          % (len(single["sites"]), n_jar, len(repos_out)))
 
     out = args.out
     prev_n = read_prev_sites(os.path.join(out, "vod-status.json"))
@@ -435,11 +472,27 @@ def main() -> int:
     urls = []
     for r in repos_out:
         dump(os.path.join(repo_dir, r["slug"] + ".json"), r["body"])
-        urls.append({"name": "%s（%d站）" % (r["label"], r["n"]),
+        urls.append({"name": short_name(r["label"], r["n"]),
                      "url": ("%s/repo/%s.json" % (base, r["slug"])) if base else "./repo/%s.json" % r["slug"]})
 
+    # 条目别太多：电视端会把整份索引拉一遍，条目越多启动越慢；而且有些壳
+    # 会把所有子仓的 sites 合并成一个列表，超上限就直接白屏。
+    urls = urls[: int(cfg.get("max_lines") or 20)]
+
+    # 顶层也带一份 spider/parses/lives —— 有的壳只读多仓索引的顶层字段，
+    # 切进子仓后不再加载子仓的 spider，缺了就是"能选线路，进去没内容"。
+    multi = {"urls": urls}
+    if base_body.get("spider"):
+        multi["spider"] = base_body["spider"]
+    if single.get("parses"):
+        multi["parses"] = single["parses"]
+    if single.get("lives"):
+        multi["lives"] = single["lives"]
+    if single.get("flags"):
+        multi["flags"] = single["flags"]
+
     dump(os.path.join(out, "tvbox.json"), single)
-    dump(os.path.join(out, "multi.json"), {"urls": urls})
+    dump(os.path.join(out, "multi.json"), multi)
     write_report(os.path.join(out, "vod-report.md"), chosen, upstream_log, all_sites, cfg, base, mode)
     write_status(os.path.join(out, "vod-status.json"), len(single["sites"]), len(repos_out), upstream_log)
     print("[写入] tvbox.json / multi.json / repo/*.json / vod-report.md")
@@ -487,8 +540,10 @@ def write_report(path, kept, upstream_log, all_sites, cfg, base, mode="geo_safe"
             "| --- | --- | --- | --- | --- |"]
     for s in kept:
         out.append("| %s | %s | %s | %s | %s |" % (
-            s["name"], s["type"], {"alive": "可用", "suspect": "疑点"}.get(s["_cls"], s["_cls"]),
-            s["_ms"], s["_note"]))
+            s.get("name", "?"), s.get("type", "?"),
+            {"alive": "可用", "suspect": "疑点", "spider": "可用（需 jar）"}.get(
+                s.get("_cls"), s.get("_cls", "?")),
+            s.get("_ms"), s.get("_note", "")))
     with open(path, "w", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(out) + "\n")
 

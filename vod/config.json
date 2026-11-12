@@ -4,6 +4,7 @@
   "timeout": 10,
   "keep_sites": 90,
   "max_per_upstream": 45,
+  "max_lines": 20,
   "max_probe_sites": 1200,
   "base_url": "",
   "lives": [],
