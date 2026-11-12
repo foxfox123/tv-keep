@@ -1,15 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""把 dist/ 推到 GitHub，然后清掉 jsDelivr 的 CDN 缓存。
+"""把 dist/ 推到 GitHub，清掉 jsDelivr 缓存，并验证线上真的变成了新内容。
 
-为什么需要清缓存：jsDelivr 对分支地址（@main）的 CDN 缓存是 12 小时
-（响应头 s-maxage=43200）。不清的话，电视今天抽到的还是昨天的配置。
+两个关键点，都是实测踩出来的：
 
-只清"这次真的改过"的文件，避免把 40 多个线路全清一遍触发限流。
+1. 地址要用「不带 @branch」的写法
+   https://cdn.jsdelivr.net/gh/user/repo/dist/xxx
+   而不是 .../gh/user/repo@main/dist/xxx
+   后者有独立缓存，清了也常常还是旧内容（实测：@main 一直返回旧版，
+   无版本写法三个节点立刻都是新版）。
+
+2. 清缓存只是"请求"，不保证成功
+   jsDelivr 各边缘节点状态不一致。所以推完必须去线上核对，
+   对不上就再刷一次，而不是在本地打印一句"成功"了事。
 """
 import argparse
 import json
 import os
+import random
 import subprocess
 import sys
 import time
@@ -21,6 +29,7 @@ from concurrent.futures import ThreadPoolExecutor
 HERE = os.path.dirname(os.path.abspath(__file__))
 CONF = os.path.join(HERE, "cf", "config.json")
 PURGE = "https://purge.jsdelivr.net"
+UA = "Mozilla/5.0 (tv-keep)"
 
 
 def sh(args: list[str]) -> subprocess.CompletedProcess:
@@ -29,7 +38,7 @@ def sh(args: list[str]) -> subprocess.CompletedProcess:
 
 
 def load_conf() -> dict:
-    conf = {"public_base": "", "jsdelivr": {}}
+    conf = {"public_base": ""}
     if os.path.exists(CONF):
         try:
             with open(CONF, "r", encoding="utf-8-sig") as f:
@@ -39,40 +48,51 @@ def load_conf() -> dict:
     return conf
 
 
-def jd_parts(conf: dict) -> tuple[str, str, str]:
-    """从 public_base 里解析出 user / repo / branch。
+def jd_parts(base: str) -> tuple[str, str, str]:
+    """从 public_base 解析 user / repo / branch。
 
-    public_base 形如 https://cdn.jsdelivr.net/gh/foxfox123/tv-keep@main/dist
+    https://cdn.jsdelivr.net/gh/foxfox123/tv-keep/dist          -> ('foxfox123','tv-keep','')
+    https://cdn.jsdelivr.net/gh/foxfox123/tv-keep@main/dist    -> ('foxfox123','tv-keep','main')
     """
-    base = (conf.get("public_base") or "").strip().rstrip("/")
-    if not base:
+    base = (base or "").strip().rstrip("/")
+    if "/gh/" not in base:
         return "", "", ""
-    p = urllib.parse.urlparse(base)
-    if "/gh/" not in p.path:
-        return "", "", ""
-    seg = p.path.split("/gh/", 1)[1].split("/")
+    seg = urllib.parse.urlparse(base).path.split("/gh/", 1)[1].split("/")
     if len(seg) < 2:
         return "", "", ""
-    user = seg[0]
     repo, _, branch = seg[1].partition("@")
-    return user, repo, branch or "main"
+    return seg[0], repo, branch
+
+
+def purge_path(user: str, repo: str, branch: str, path: str) -> str:
+    spec = "%s/%s" % (user, repo) if not branch else "%s/%s@%s" % (user, repo, branch)
+    return "/gh/%s/%s" % (spec, path.lstrip("/"))
 
 
 def purge_one(path: str, user: str, repo: str, branch: str) -> tuple[str, bool, str]:
-    url = "%s/gh/%s/%s@%s/%s" % (PURGE, user, repo, branch, path.lstrip("/"))
-    req = urllib.request.Request(url, headers={"User-Agent": "tv-keep/1.0", "Accept": "application/json"})
+    p = purge_path(user, repo, branch, path)
+    req = urllib.request.Request(PURGE + p,
+                                 headers={"User-Agent": UA, "Accept": "application/json"})
     try:
         with urllib.request.urlopen(req, timeout=25) as r:
             raw = r.read().decode("utf-8", "replace")
             data = json.loads(raw) if raw.strip().startswith("{") else {}
-            info = (data.get("paths") or {}).get("/gh/%s/%s@%s/%s" % (user, repo, branch, path.lstrip("/"))) or {}
-            throttled = bool(info.get("throttled"))
-            ok = r.status == 200 and not throttled
-            return path, ok, "限流" if throttled else ""
+            info = (data.get("paths") or {}).get(p) or {}
+            if info.get("throttled"):
+                return path, False, "限流"
+            prov = info.get("providers") or {}
+            ok = r.status == 200 and bool(prov) and all(prov.values())
+            return path, ok, "" if ok else "节点未全部刷新"
     except urllib.error.HTTPError as e:
         return path, False, "HTTP %s" % e.code
     except Exception as e:  # noqa: BLE001
         return path, False, str(e)[:60]
+
+
+def fetch_text(url: str, timeout: int = 25) -> str:
+    req = urllib.request.Request(url, headers={"User-Agent": UA})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return r.read().decode("utf-8", "replace")
 
 
 def main() -> int:
@@ -80,24 +100,35 @@ def main() -> int:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
     ap = argparse.ArgumentParser()
-    ap.add_argument("--no-purge", action="store_true", help="只推送，不清 CDN 缓存")
+    ap.add_argument("--no-purge", action="store_true", help="只推送，不清缓存")
     ap.add_argument("--no-push", action="store_true", help="只提交到本地，不推送")
     ap.add_argument("--message", default="", help="自定义提交信息")
-    ap.add_argument("--dist", default=os.path.join(HERE, "dist"), help="要发布的目录")
+    ap.add_argument("--dist", default=os.path.join(HERE, "dist"))
+    ap.add_argument("--verify-tries", type=int, default=4, help="线上校验最大轮数")
     args = ap.parse_args()
 
     conf = load_conf()
-    user, repo, branch = jd_parts(conf)
+    base = (conf.get("public_base") or "").strip().rstrip("/")
+    user, repo, branch = jd_parts(base)
     if not user:
-        print("[发布] cf/config.json 里的 public_base 没填，不知道往哪推。", file=sys.stderr)
-        print("       形如 https://cdn.jsdelivr.net/gh/用户名/仓库名@main/dist", file=sys.stderr)
+        print("[发布] cf/config.json 的 public_base 没填或格式不对。", file=sys.stderr)
+        print("       形如 https://cdn.jsdelivr.net/gh/用户名/仓库名/dist", file=sys.stderr)
         return 2
 
     rel_dist = os.path.relpath(args.dist, HERE).replace(os.sep, "/")
 
-    # 1) 暂存 + 提交
-    r = sh(["git", "rev-parse", "--is-inside-work-tree"])
-    if r.returncode != 0:
+    # 1) 版本标记：让"线上是否已更新"可被程序判断，而不是靠人眼
+    token = "%s-%04x" % (time.strftime("%Y%m%d%H%M%S"), random.randint(0, 0xFFFF))
+    try:
+        os.makedirs(args.dist, exist_ok=True)
+        with open(os.path.join(args.dist, "version.json"), "w", encoding="utf-8") as f:
+            json.dump({"token": token, "time": time.strftime("%Y-%m-%d %H:%M:%S")},
+                      f, ensure_ascii=False)
+    except Exception as e:  # noqa: BLE001
+        print("[发布] 写版本标记失败：%s" % e, file=sys.stderr)
+
+    # 2) 提交
+    if sh(["git", "rev-parse", "--is-inside-work-tree"]).returncode != 0:
         print("[发布] 这里不是 git 仓库：%s" % HERE, file=sys.stderr)
         return 2
 
@@ -109,74 +140,79 @@ def main() -> int:
         if c.returncode != 0:
             print("[发布] 提交失败：%s" % (c.stderr or c.stdout).strip()[:300], file=sys.stderr)
             return 2
-        changed = [ln.strip() for ln in sh(["git", "show", "--name-only", "--format=", "HEAD"]).stdout.splitlines() if ln.strip()]
+        changed = [ln.strip() for ln in
+                   sh(["git", "show", "--name-only", "--format=", "HEAD"]).stdout.splitlines() if ln.strip()]
         print("[发布] 已提交 %d 个文件" % len(changed))
     else:
         changed = []
         print("[发布] 内容没有变化，跳过提交")
 
-    # 2) 推送
+    # 3) 推送
     if not args.no_push:
-        p = sh(["git", "push", "origin", "HEAD:%s" % branch])
+        p = sh(["git", "push", "origin", "HEAD:%s" % (branch or "main")])
         if p.returncode != 0:
             err = (p.stderr or p.stdout).strip()
             print("[发布] 推送失败：", file=sys.stderr)
             print(err[:600], file=sys.stderr)
             if "Permission denied" in err or "publickey" in err:
-                print("\n  原因：这台机器的 SSH 公钥没有被 GitHub 认可。", file=sys.stderr)
-                print("  打开 https://github.com/settings/keys ，添加下面这行公钥：", file=sys.stderr)
-                pub = os.path.expanduser("~/.ssh/id_rsa.pub")
-                if os.path.exists(pub):
-                    print("  " + open(pub, encoding="utf-8").read().strip(), file=sys.stderr)
+                print("\n  这台机器的密钥没被 GitHub 认可。要用的那把是：", file=sys.stderr)
+                print("  ~/.ssh/github_tvkeep_rsa", file=sys.stderr)
             return 2
-        print("[发布] 已推送到 github.com/%s/%s (%s)" % (user, repo, branch))
+        print("[发布] 已推送到 github.com/%s/%s (%s)" % (user, repo, branch or "默认分支"))
 
-    # 3) 清 CDN 缓存：只清这次改过的、且真在 dist 里的文件
-    if args.no_purge or args.no_push:
-        return 0
-    if not changed:
+    if args.no_push:
         return 0
 
-    targets = []
+    # 4) 清缓存：只清这次真改过的、电视会读的文件
+    rel_changed = []
     for path in changed:
         if not path.startswith(rel_dist + "/"):
             continue
         rel = path[len(rel_dist) + 1:]
-        # 电视只读这几类，报告和状态文件不用清
         if rel.endswith("-hist.json") or rel.endswith("-status.json"):
             continue
-        targets.append(rel)
+        rel_changed.append(rel)
 
-    if not targets:
+    if not args.no_purge and rel_changed:
+        rel_changed.sort(key=lambda p: (0 if p == "multi.json" else 1, p))
+        print("[发布] 清 jsDelivr 缓存 %d 个文件…" % len(rel_changed))
+        with ThreadPoolExecutor(max_workers=6) as ex:
+            res = list(ex.map(lambda p: purge_one(p, user, repo, branch), rel_changed))
+        ok_n = sum(1 for _, ok, _ in res if ok)
+        print("[发布] 清缓存请求完成 %d/%d" % (ok_n, len(rel_changed)))
+        for p, ok, note in res:
+            if not ok:
+                print("   · %s 未刷新（%s）" % (p, note))
+
+    # 5) 线上核对：这才是"发布成功"的定义
+    marker_url = "%s/version.json" % base
+    ok = False
+    for attempt in range(1, args.verify_tries + 1):
+        try:
+            if token in fetch_text(marker_url, timeout=20):
+                print("[核对] 线上已是新版本（第 %d 次检查）" % attempt)
+                ok = True
+                break
+            print("[核对] 第 %d 次：线上还是旧版本，重新清缓存…" % attempt)
+        except Exception as e:  # noqa: BLE001
+            print("[核对] 第 %d 次：取不到 version.json（%s）" % (attempt, str(e)[:50]))
+        if attempt < args.verify_tries:
+            if not args.no_purge:
+                with ThreadPoolExecutor(max_workers=4) as ex:
+                    list(ex.map(lambda p: purge_one(p, user, repo, branch),
+                                ["version.json", "multi.json"]))
+            time.sleep(4)
+
+    print()
+    if ok:
+        print("电视上填这个地址（永远不用改）：")
+        print("  %s/multi.json" % base)
         return 0
 
-    # multi.json 最先清：它决定每条线路指向哪个文件
-    targets.sort(key=lambda p: (0 if p == "multi.json" else 1, p))
-    print("[发布] 清 jsDelivr 缓存 %d 个文件…" % len(targets))
-    fails = []
-    with ThreadPoolExecutor(max_workers=6) as ex:
-        for path, ok, note in ex.map(lambda p: purge_one(p, user, repo, branch), targets):
-            if not ok:
-                fails.append((path, note))
-
-    if fails:
-        # jsDelivr 拿到新 commit 有几十秒延迟，失败的再试一轮
-        print("[发布] %d 个没清成功，等 5 秒重试…" % len(fails))
-        time.sleep(5)
-        with ThreadPoolExecutor(max_workers=4) as ex:
-            again = list(ex.map(lambda t: purge_one(t[0], user, repo, branch), fails))
-        fails = [(p, n) for p, ok, n in again if not ok]
-
-    ok_n = len(targets) - len(fails)
-    print("[发布] 缓存已清 %d/%d" % (ok_n, len(targets)))
-    for p, n in fails[:8]:
-        print("   · 未清成功 %s（%s）" % (p, n))
-    if fails:
-        print("   影响：这几个文件最多晚 12 小时才更新，不影响播放。")
-
-    print("\n电视上填这个地址（永远不用改）：")
-    print("  %s/multi.json" % (conf["public_base"].rstrip("/")))
-    return 0
+    print("[注意] 线上还是旧版本，电视可能看到的是上一次的配置。", file=sys.stderr)
+    print("       通常 12 小时内会自己好。临时办法：把地址换成", file=sys.stderr)
+    print("       https://gcore.jsdelivr.net/gh/%s/%s/dist/multi.json" % (user, repo), file=sys.stderr)
+    return 1
 
 
 if __name__ == "__main__":
