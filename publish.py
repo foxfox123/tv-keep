@@ -171,6 +171,10 @@ def main() -> int:
         rel = path[len(rel_dist) + 1:]
         if rel.endswith("-hist.json") or rel.endswith("-status.json"):
             continue
+        # repo/*.json 是每条线路的配置，缓存清了也没用（实测 purge 无效），
+        # 清它们只会触发 jsDelivr 限流，日志里一片红。只清"入口文件"。
+        if rel.startswith("repo/"):
+            continue
         rel_changed.append(rel)
 
     if not args.no_purge and rel_changed:
