@@ -1,0 +1,751 @@
+{
+"1000": {
+"kbps": 9300,
+"height": 0,
+"ok": true,
+"ttfb": 195,
+"note": "5.0s 分片 5677KB"
+},
+"1001": {
+"kbps": 9999,
+"height": 0,
+"ok": true,
+"ttfb": 200,
+"note": "5.0s 分片 6103KB"
+},
+"1002": {
+"kbps": 9300,
+"height": 0,
+"ok": true,
+"ttfb": 193,
+"note": "5.0s 分片 5677KB"
+},
+"1003": {
+"kbps": 9999,
+"height": 0,
+"ok": true,
+"ttfb": 189,
+"note": "5.0s 分片 6103KB"
+},
+"1004": {
+"kbps": 8616,
+"height": 0,
+"ok": true,
+"ttfb": 184,
+"note": "5.0s 分片 5259KB"
+},
+"1005": {
+"kbps": 8620,
+"height": 0,
+"ok": true,
+"ttfb": 196,
+"note": "5.0s 分片 5261KB"
+},
+"1006": {
+"kbps": 9300,
+"height": 0,
+"ok": true,
+"ttfb": 198,
+"note": "5.0s 分片 5677KB"
+},
+"1007": {
+"kbps": 9300,
+"height": 0,
+"ok": true,
+"ttfb": 173,
+"note": "5.0s 分片 5677KB"
+},
+"1008": {
+"kbps": 9298,
+"height": 0,
+"ok": true,
+"ttfb": 165,
+"note": "5.0s 分片 5675KB"
+},
+"1009": {
+"kbps": 9300,
+"height": 0,
+"ok": true,
+"ttfb": 165,
+"note": "5.0s 分片 5677KB"
+},
+"1010": {
+"kbps": 2457,
+"height": 0,
+"ok": true,
+"ttfb": 161,
+"note": "5.0s 分片 1500KB"
+},
+"1011": {
+"kbps": 2459,
+"height": 0,
+"ok": true,
+"ttfb": 158,
+"note": "5.0s 分片 1501KB"
+},
+"1012": {
+"kbps": 9300,
+"height": 0,
+"ok": true,
+"ttfb": 164,
+"note": "5.0s 分片 5677KB"
+},
+"1013": {
+"kbps": 8776,
+"height": 0,
+"ok": true,
+"ttfb": 158,
+"note": "5.0s 分片 5357KB"
+},
+"1014": {
+"kbps": 8799,
+"height": 0,
+"ok": true,
+"ttfb": 152,
+"note": "5.0s 分片 5371KB"
+},
+"1015": {
+"kbps": 8804,
+"height": 0,
+"ok": true,
+"ttfb": 169,
+"note": "5.0s 分片 5373KB"
+},
+"1016": {
+"kbps": 8797,
+"height": 0,
+"ok": true,
+"ttfb": 163,
+"note": "5.0s 分片 5369KB"
+},
+"1017": {
+"kbps": 8801,
+"height": 0,
+"ok": true,
+"ttfb": 163,
+"note": "5.0s 分片 5372KB"
+},
+"1018": {
+"kbps": 8804,
+"height": 0,
+"ok": true,
+"ttfb": 158,
+"note": "5.0s 分片 5373KB"
+},
+"1019": {
+"kbps": 8799,
+"height": 0,
+"ok": true,
+"ttfb": 157,
+"note": "5.0s 分片 5371KB"
+},
+"1020": {
+"kbps": 8808,
+"height": 0,
+"ok": true,
+"ttfb": 150,
+"note": "5.0s 分片 5376KB"
+},
+"1021": {
+"kbps": 8799,
+"height": 0,
+"ok": true,
+"ttfb": 154,
+"note": "5.0s 分片 5371KB"
+},
+"1022": {
+"kbps": 8804,
+"height": 0,
+"ok": true,
+"ttfb": 160,
+"note": "5.0s 分片 5373KB"
+},
+"1023": {
+"kbps": 8795,
+"height": 0,
+"ok": true,
+"ttfb": 151,
+"note": "5.0s 分片 5368KB"
+},
+"1024": {
+"kbps": 8793,
+"height": 0,
+"ok": true,
+"ttfb": 158,
+"note": "5.0s 分片 5367KB"
+},
+"1025": {
+"kbps": 8799,
+"height": 0,
+"ok": true,
+"ttfb": 164,
+"note": "5.0s 分片 5371KB"
+},
+"1026": {
+"kbps": 8799,
+"height": 0,
+"ok": true,
+"ttfb": 163,
+"note": "5.0s 分片 5371KB"
+},
+"1027": {
+"kbps": 8799,
+"height": 0,
+"ok": true,
+"ttfb": 164,
+"note": "5.0s 分片 5371KB"
+},
+"1028": {
+"kbps": 8804,
+"height": 0,
+"ok": true,
+"ttfb": 179,
+"note": "5.0s 分片 5373KB"
+},
+"1029": {
+"kbps": 24385,
+"height": 0,
+"ok": true,
+"ttfb": 476,
+"note": "5.0s 分片 14883KB"
+},
+"1030": {
+"kbps": 8810,
+"height": 0,
+"ok": true,
+"ttfb": 162,
+"note": "5.0s 分片 5377KB"
+},
+"1031": {
+"kbps": 8801,
+"height": 0,
+"ok": true,
+"ttfb": 175,
+"note": "5.0s 分片 5372KB"
+},
+"1032": {
+"kbps": 8804,
+"height": 0,
+"ok": true,
+"ttfb": 1232,
+"note": "5.0s 分片 5373KB"
+},
+"1033": {
+"kbps": 9300,
+"height": 0,
+"ok": true,
+"ttfb": 217,
+"note": "5.0s 分片 5677KB"
+},
+"1034": {
+"kbps": 2796,
+"height": 0,
+"ok": true,
+"ttfb": 213,
+"note": "5.0s 分片 1707KB"
+},
+"1035": {
+"kbps": 8804,
+"height": 0,
+"ok": true,
+"ttfb": 150,
+"note": "5.0s 分片 5373KB"
+},
+"1036": {
+"kbps": 8808,
+"height": 0,
+"ok": true,
+"ttfb": 151,
+"note": "5.0s 分片 5376KB"
+},
+"1037": {
+"kbps": 29676,
+"height": 0,
+"ok": true,
+"ttfb": 157,
+"note": "5.0s 分片 18113KB"
+},
+"1038": {
+"kbps": 8795,
+"height": 0,
+"ok": true,
+"ttfb": 213,
+"note": "5.0s 分片 5368KB"
+},
+"1039": {
+"kbps": 2752,
+"height": 0,
+"ok": true,
+"ttfb": 1535,
+"note": "5.0s 分片 1680KB"
+},
+"1040": {
+"kbps": 2739,
+"height": 0,
+"ok": true,
+"ttfb": 169,
+"note": "5.0s 分片 1672KB"
+},
+"1041": {
+"kbps": 2800,
+"height": 0,
+"ok": true,
+"ttfb": 164,
+"note": "5.0s 分片 1709KB"
+},
+"1042": {
+"kbps": 8799,
+"height": 0,
+"ok": true,
+"ttfb": 170,
+"note": "5.0s 分片 5371KB"
+},
+"1043": {
+"kbps": 8799,
+"height": 0,
+"ok": true,
+"ttfb": 164,
+"note": "5.0s 分片 5371KB"
+},
+"1044": {
+"kbps": 8806,
+"height": 0,
+"ok": true,
+"ttfb": 205,
+"note": "5.0s 分片 5375KB"
+},
+"1045": {
+"kbps": 8810,
+"height": 0,
+"ok": true,
+"ttfb": 157,
+"note": "5.0s 分片 5377KB"
+},
+"1046": {
+"kbps": 8804,
+"height": 0,
+"ok": true,
+"ttfb": 153,
+"note": "5.0s 分片 5373KB"
+},
+"1047": {
+"kbps": 8801,
+"height": 0,
+"ok": true,
+"ttfb": 165,
+"note": "5.0s 分片 5372KB"
+},
+"1048": {
+"kbps": 2803,
+"height": 0,
+"ok": true,
+"ttfb": 1172,
+"note": "5.0s 分片 1711KB"
+},
+"1049": {
+"kbps": 8801,
+"height": 0,
+"ok": true,
+"ttfb": 150,
+"note": "5.0s 分片 5372KB"
+},
+"1050": {
+"kbps": 8795,
+"height": 0,
+"ok": true,
+"ttfb": 195,
+"note": "5.0s 分片 5368KB"
+},
+"1051": {
+"kbps": 8797,
+"height": 0,
+"ok": true,
+"ttfb": 167,
+"note": "5.0s 分片 5369KB"
+},
+"1052": {
+"kbps": 8719,
+"height": 0,
+"ok": true,
+"ttfb": 156,
+"note": "5.0s 分片 5322KB"
+},
+"1053": {
+"kbps": 8799,
+"height": 0,
+"ok": true,
+"ttfb": 156,
+"note": "5.0s 分片 5371KB"
+},
+"1054": {
+"kbps": 8801,
+"height": 0,
+"ok": true,
+"ttfb": 162,
+"note": "5.0s 分片 5372KB"
+},
+"1055": {
+"kbps": 2710,
+"height": 0,
+"ok": true,
+"ttfb": 168,
+"note": "5.0s 分片 1654KB"
+},
+"1056": {
+"kbps": 9014,
+"height": 0,
+"ok": true,
+"ttfb": 217,
+"note": "5.0s 分片 5502KB"
+},
+"1057": {
+"kbps": 8797,
+"height": 0,
+"ok": true,
+"ttfb": 205,
+"note": "5.0s 分片 5369KB"
+},
+"1058": {
+"kbps": 8799,
+"height": 0,
+"ok": true,
+"ttfb": 224,
+"note": "5.0s 分片 5371KB"
+},
+"1059": {
+"kbps": 8808,
+"height": 0,
+"ok": true,
+"ttfb": 163,
+"note": "5.0s 分片 5376KB"
+},
+"1060": {
+"kbps": 7601,
+"height": 0,
+"ok": true,
+"ttfb": 155,
+"note": "5.0s 分片 4639KB"
+},
+"1061": {
+"kbps": 8804,
+"height": 0,
+"ok": true,
+"ttfb": 158,
+"note": "5.0s 分片 5373KB"
+},
+"1062": {
+"kbps": 9296,
+"height": 0,
+"ok": true,
+"ttfb": 166,
+"note": "5.0s 分片 5674KB"
+},
+"1063": {
+"kbps": 8801,
+"height": 0,
+"ok": true,
+"ttfb": 156,
+"note": "5.0s 分片 5372KB"
+},
+"1064": {
+"kbps": 8806,
+"height": 0,
+"ok": true,
+"ttfb": 219,
+"note": "5.0s 分片 5375KB"
+},
+"1065": {
+"kbps": 8793,
+"height": 0,
+"ok": true,
+"ttfb": 218,
+"note": "5.0s 分片 5367KB"
+},
+"1066": {
+"kbps": 8804,
+"height": 0,
+"ok": true,
+"ttfb": 471,
+"note": "5.0s 分片 5373KB"
+},
+"1067": {
+"kbps": 8801,
+"height": 0,
+"ok": true,
+"ttfb": 163,
+"note": "5.0s 分片 5372KB"
+},
+"1068": {
+"kbps": 8804,
+"height": 0,
+"ok": true,
+"ttfb": 160,
+"note": "5.0s 分片 5373KB"
+},
+"1069": {
+"kbps": 9298,
+"height": 0,
+"ok": true,
+"ttfb": 158,
+"note": "5.0s 分片 5675KB"
+},
+"1070": {
+"kbps": 8791,
+"height": 0,
+"ok": true,
+"ttfb": 155,
+"note": "5.0s 分片 5366KB"
+},
+"1071": {
+"kbps": 9298,
+"height": 0,
+"ok": true,
+"ttfb": 166,
+"note": "5.0s 分片 5675KB"
+},
+"1072": {
+"kbps": 8799,
+"height": 0,
+"ok": true,
+"ttfb": 1161,
+"note": "5.0s 分片 5371KB"
+},
+"1073": {
+"kbps": 9300,
+"height": 0,
+"ok": true,
+"ttfb": 159,
+"note": "5.0s 分片 5677KB"
+},
+"1074": {
+"kbps": 9300,
+"height": 0,
+"ok": true,
+"ttfb": 456,
+"note": "5.0s 分片 5677KB"
+},
+"1075": {
+"kbps": 0,
+"height": 0,
+"ok": false,
+"ttfb": null,
+"note": "HTTP 404"
+},
+"1076": {
+"kbps": 9298,
+"height": 0,
+"ok": true,
+"ttfb": 156,
+"note": "5.0s 分片 5675KB"
+},
+"1077": {
+"kbps": 2459,
+"height": 0,
+"ok": true,
+"ttfb": 467,
+"note": "5.0s 分片 1501KB"
+},
+"1078": {
+"kbps": 7955,
+"height": 0,
+"ok": true,
+"ttfb": 162,
+"note": "5.0s 分片 4855KB"
+},
+"1079": {
+"kbps": 2457,
+"height": 0,
+"ok": true,
+"ttfb": 203,
+"note": "5.0s 分片 1500KB"
+},
+"1080": {
+"kbps": 2457,
+"height": 0,
+"ok": true,
+"ttfb": 1196,
+"note": "5.0s 分片 1500KB"
+},
+"1081": {
+"kbps": 2457,
+"height": 0,
+"ok": true,
+"ttfb": 158,
+"note": "5.0s 分片 1500KB"
+},
+"1082": {
+"kbps": 2457,
+"height": 0,
+"ok": true,
+"ttfb": 1169,
+"note": "5.0s 分片 1500KB"
+},
+"1083": {
+"kbps": 2459,
+"height": 0,
+"ok": true,
+"ttfb": 164,
+"note": "5.0s 分片 1501KB"
+},
+"1084": {
+"kbps": 2457,
+"height": 0,
+"ok": true,
+"ttfb": 157,
+"note": "5.0s 分片 1500KB"
+},
+"1085": {
+"kbps": 9012,
+"height": 0,
+"ok": true,
+"ttfb": 199,
+"note": "5.0s 分片 5500KB"
+},
+"1086": {
+"kbps": 2739,
+"height": 0,
+"ok": true,
+"ttfb": 205,
+"note": "5.0s 分片 1672KB"
+},
+"1087": {
+"kbps": 2748,
+"height": 0,
+"ok": true,
+"ttfb": 169,
+"note": "5.0s 分片 1677KB"
+},
+"1088": {
+"kbps": 2748,
+"height": 0,
+"ok": true,
+"ttfb": 161,
+"note": "5.0s 分片 1677KB"
+},
+"1089": {
+"kbps": 2752,
+"height": 0,
+"ok": true,
+"ttfb": 204,
+"note": "5.0s 分片 1680KB"
+},
+"1090": {
+"kbps": 2737,
+"height": 0,
+"ok": true,
+"ttfb": 192,
+"note": "5.0s 分片 1671KB"
+},
+"1091": {
+"kbps": 2800,
+"height": 0,
+"ok": true,
+"ttfb": 192,
+"note": "5.0s 分片 1709KB"
+},
+"1092": {
+"kbps": 2750,
+"height": 0,
+"ok": true,
+"ttfb": 149,
+"note": "5.0s 分片 1678KB"
+},
+"1093": {
+"kbps": 2619,
+"height": 0,
+"ok": true,
+"ttfb": 159,
+"note": "5.0s 分片 1599KB"
+},
+"1094": {
+"kbps": 9300,
+"height": 0,
+"ok": true,
+"ttfb": 146,
+"note": "5.0s 分片 5677KB"
+},
+"1095": {
+"kbps": 2459,
+"height": 0,
+"ok": true,
+"ttfb": 165,
+"note": "5.0s 分片 1501KB"
+},
+"1096": {
+"kbps": 8793,
+"height": 0,
+"ok": true,
+"ttfb": 161,
+"note": "5.0s 分片 5367KB"
+},
+"1097": {
+"kbps": 8785,
+"height": 0,
+"ok": true,
+"ttfb": 201,
+"note": "5.0s 分片 5362KB"
+},
+"1098": {
+"kbps": 8806,
+"height": 0,
+"ok": true,
+"ttfb": 196,
+"note": "5.0s 分片 5375KB"
+},
+"1099": {
+"kbps": 2803,
+"height": 0,
+"ok": true,
+"ttfb": 187,
+"note": "5.0s 分片 1711KB"
+},
+"1100": {
+"kbps": 2463,
+"height": 0,
+"ok": true,
+"ttfb": 1166,
+"note": "5.0s 分片 1503KB"
+},
+"1101": {
+"kbps": 2756,
+"height": 0,
+"ok": true,
+"ttfb": 155,
+"note": "5.0s 分片 1682KB"
+},
+"1102": {
+"kbps": 9298,
+"height": 0,
+"ok": true,
+"ttfb": 167,
+"note": "5.0s 分片 5675KB"
+},
+"1103": {
+"kbps": 5001,
+"height": 0,
+"ok": true,
+"ttfb": 165,
+"note": "5.0s 分片 3052KB"
+},
+"1104": {
+"kbps": 9298,
+"height": 0,
+"ok": true,
+"ttfb": 469,
+"note": "5.0s 分片 5675KB"
+},
+"1105": {
+"kbps": 9298,
+"height": 0,
+"ok": true,
+"ttfb": 158,
+"note": "5.0s 分片 5675KB"
+},
+"1106": {
+"kbps": 9300,
+"height": 0,
+"ok": true,
+"ttfb": 158,
+"note": "5.0s 分片 5677KB"
+}
+}

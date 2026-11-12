@@ -1,0 +1,47 @@
+{
+ "generated": "2026-11-12 21:52:33",
+ "total": 2897,
+ "alive": 4,
+ "items": [
+  {
+   "name": "麻栗坡",
+   "url": "http://m3u8.channel.wsrtv.com.cn/cms/videos/nmip-media/channellive/channel18/playlist.m3u8",
+   "file": "云南移动IPTV.m3u",
+   "ok": true,
+   "kbps": 5023,
+   "ttfb": 8154,
+   "res": null,
+   "note": "5.0s 分片"
+  },
+  {
+   "name": "CGTN Documentary",
+   "url": "https://english-livebkali.cgtn.com/live/doccgtn_0.m3u8",
+   "file": "安徽电信.m3u",
+   "ok": true,
+   "kbps": 4062,
+   "ttfb": 186,
+   "res": null,
+   "note": "4.0s 分片"
+  },
+  {
+   "name": "CGTN English",
+   "url": "https://english-liveali.cgtn.com/hls/yypdyyctzb/yypdyyctzbcd/playlist.m3u8",
+   "file": "安徽电信.m3u",
+   "ok": true,
+   "kbps": 4040,
+   "ttfb": 204,
+   "res": null,
+   "note": "10.0s 分片"
+  },
+  {
+   "name": "丘北综合",
+   "url": "http://m3u8.channel.wsrtv.com.cn/cms/videos/nmip-media/channellive/channel14/playlist.m3u8",
+   "file": "云南移动IPTV.m3u",
+   "ok": true,
+   "kbps": 1809,
+   "ttfb": 8158,
+   "res": null,
+   "note": "6.0s 分片"
+  }
+ ]
+}

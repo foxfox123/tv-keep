@@ -159,6 +159,45 @@ def match_score(ch: dict, cand_name: str) -> int:
     return 0
 
 
+def load_gateway(path: str) -> dict | None:
+    """运营商 IPTV 单播网关的映射表。
+
+    这类网关的每条流都是运营商自己的 CBR 直播（常见 8Mbps），
+    比公网上的中转源稳，也比它们清楚，所以优先级放在最前。
+    映射表单独放在 gateway.json：换网关只改那里，不用动代码。
+    """
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            gw = json.load(f)
+    except Exception as e:  # noqa: BLE001
+        print("[网关] 读取失败 %s，忽略" % net._short(e))
+        return None
+    return gw if gw.get("enabled", True) else None
+
+
+def gateway_candidates(gw: dict | None) -> list[dict]:
+    out = []
+    if not gw:
+        return out
+    tpl = gw.get("url_tpl") or ""
+    hosts = gw.get("hosts") or []
+    chans = gw.get("channels") or {}
+    if not tpl or not hosts or not chans:
+        return out
+    for host in hosts:
+        for num, name in chans.items():
+            out.append({
+                "name": name, "tvg_name": name, "logo": "", "group": "",
+                "url": tpl.format(host=host, num=num),
+                "src": "IPTV网关",
+                "label": "%s · 运营商" % name,
+                "_gw": True,
+            })
+    return out
+
+
 def collect(sources: list[tuple[str, str]], timeout: float) -> tuple[list[dict], list[dict]]:
     """并发拉取所有订阅源，返回 (候选列表, 源状态)"""
     cands, status = [], []
@@ -223,6 +262,11 @@ def main() -> int:
     cands, src_status = collect(sources, timeout=30)
     print("[采集] 拿到 %d 条原始线路" % len(cands))
 
+    gw_cands = gateway_candidates(load_gateway(os.path.join(args.live_dir, "gateway.json")))
+    if gw_cands:
+        cands.extend(gw_cands)
+        print("[采集] 运营商 IPTV 网关 %d 条（优先级最高）" % len(gw_cands))
+
     # 每台先筛出匹配的候选。注意：候选对象必须全局共用一份，
     # 因为探测结果要写回同一个对象；如果每个频道各自复制一份字典，
     # 落在多个频道里的同一条线路就只有第一个频道拿得到结果。
@@ -248,7 +292,8 @@ def main() -> int:
     # 有几个订阅源同时提供了这条线，是"这条线有多主流"的粗略代理
     for c in todo:
         c["nsrc"] = len(src_of.get(c["url"]) or {1})
-        c["tier"] = host_tier(c["url"])
+        # 运营商网关排在所有公网源之前：它是 CBR 专线流，画质和稳定性都不是一个量级
+        c["tier"] = -1 if c.get("_gw") else host_tier(c["url"])
     print("[探测] 待测 %d 条线路，并发 %d，模式 %s" % (len(todo), cfg["workers"], mode))
 
     if mode == "off":
@@ -352,9 +397,10 @@ def write_m3u(path: str, items: list[dict], epg: str) -> None:
     lines = ['#EXTM3U x-tvg-url="%s"' % epg if epg else "#EXTM3U"]
     for it in items:
         logo = ' tvg-logo="%s"' % it.get("logo", "") if it.get("logo") else ""
+        shown = it.get("label") or it["channel"]
         lines.append(
             '#EXTINF:-1 tvg-name="%s"%s group-title="%s",%s'
-            % (it["channel"], logo, it["group"], it["channel"])
+            % (it["channel"], logo, it["group"], shown)
         )
         lines.append(it["url"])
     with open(path, "w", encoding="utf-8", newline="\n") as f:
@@ -368,7 +414,7 @@ def write_txt(path: str, items: list[dict]) -> None:
         if it["group"] != cur:
             cur = it["group"]
             lines.append("%s,#genre#" % cur)
-        lines.append("%s,%s" % (it["channel"], it["url"]))
+        lines.append("%s,%s" % (it.get("label") or it["channel"], it["url"]))
     with open(path, "w", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(lines) + "\n")
 

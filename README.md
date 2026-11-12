@@ -156,7 +156,7 @@ CCTV-5 体育 | CCTV5,CCTV-5 | 央视频道
 | --- | --- |
 | `probe_mode` | `geo_safe` / `strict` / `off`，见第一节 |
 | `keep_per_channel` | 每个台保留几条备用线（默认 6，可调小到 3–4） |
-| `min_kbps` | 仅 `strict` 生效：低于这个码率不采用（默认 300） |
+| `min_kbps` | 仅 `strict` 生效：低于这个码率不采用（默认 1200）。这个值是**真实码率**（分片字节 ÷ 分片时长），不是下载速度——1080P 一般在 3000–10000，想要更严格就调到 3000 |
 | `workers` | 并发数，网络好可加到 32 |
 | `epg` | 填了就在 m3u 里带节目单，如 `https://live.fanmingming.cn/e.xml` |
 

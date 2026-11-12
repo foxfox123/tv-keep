@@ -343,7 +343,14 @@ def main() -> int:
 
     lives = cfg.get("lives") or []
     if not lives and base:
-        lives = [{"name": "tv-keep 直播", "url": "%s/live.m3u" % base, "epg": "", "logo": "", "ua": ""}]
+        # 两条直播源，客户端里可以切换：
+        # ① 运营商单播网关 —— 8Mbps 左右的 CBR 专线流，电信宽带下最稳
+        # ② 移动 IPv6 —— 只能在移动网下用，电信网里必然黑屏，所以名字要写清楚
+        lives = [{"name": "直播① 运营商高清（电信）", "url": "%s/live.m3u" % base,
+                  "epg": "", "logo": "", "ua": ""}]
+        if os.path.exists(os.path.join(ROOT, "dist", "live-mobile.m3u")):
+            lives.append({"name": "直播② 移动网备用", "url": "%s/live-mobile.m3u" % base,
+                          "epg": "", "logo": "", "ua": ""})
 
     sources = load_sources(os.path.join(args.vod_dir, "sources.txt"))
     print("[点播] %d 个上游配置" % len(sources))
