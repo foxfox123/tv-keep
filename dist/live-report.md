@@ -1,45 +1,45 @@
 # 直播体检报告
 
-生成时间：2026-11-12 19:03:45
+生成时间：2026-11-12 19:25:40
 
-**32/35 个频道有可用线路**，每台上限 6 条。探测模式：`strict`
+**30/35 个频道有可用线路**，每台上限 6 条。探测模式：`strict`
 
 > 真测速模式：实际拉取分片并测速率，只有国内跑出来的结果才准。
 
 | 频道 | 分组 | 候选 | 可用 | 疑点 | 采用 | 最佳速率 | 最佳延迟 | 来自 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| CCTV-1 综合 | 央视频道 | 6 | 1 | 4 | 3 | 1197 kbps | 1418 ms | iptv-org-streams, 饭太硬 |
-| CCTV-2 财经 | 央视频道 | 3 | 1 | 1 | 2 | 438 kbps | 856 ms | iptv-org-streams, 饭太硬 |
-| CCTV-3 综艺 | 央视频道 | 4 | 1 | 2 | 3 | 608 kbps | 792 ms | iptv-org-streams, vbskycn-iptv4, 饭太硬 |
-| CCTV-4 中文国际 | 央视频道 | 3 | 1 | 1 | 2 | 590 kbps | 821 ms | iptv-org-streams, 饭太硬 |
-| CCTV-5 体育 | 央视频道 | 3 | 1 | 1 | 2 | 531 kbps | 86 ms | vbskycn-iptv4, 饭太硬 |
-| CCTV-5+ 体育赛事 | 央视频道 | 4 | 0 | 3 | 2 | — | — | iptv-org-streams |
-| CCTV-6 电影 | 央视频道 | 5 | 0 | 4 | 2 | — | — | iptv-org-streams, 饭太硬 |
-| CCTV-7 国防军事 | 央视频道 | 2 | 1 | 0 | 1 | 631 kbps | 818 ms | iptv-org-streams |
-| CCTV-8 电视剧 | 央视频道 | 5 | 2 | 1 | 3 | 4540 kbps | 54 ms | vbskycn-iptv4, zhoujie218-iptv4, 饭太硬 |
-| CCTV-9 纪录 | 央视频道 | 3 | 0 | 2 | 2 | — | — | iptv-org-streams, 饭太硬 |
-| CCTV-10 科教 | 央视频道 | 4 | 1 | 2 | 3 | 753 kbps | 783 ms | iptv-org-streams, 饭太硬 |
-| CCTV-11 戏曲 | 央视频道 | 3 | 1 | 1 | 2 | 514 kbps | 1792 ms | iptv-org-streams, 饭太硬 |
-| CCTV-12 社会与法 | 央视频道 | 4 | 2 | 1 | 3 | 3328 kbps | 60 ms | iptv-org-streams, vbskycn-iptv4, 饭太硬 |
-| CCTV-13 新闻 | 央视频道 | 5 | 1 | 2 | 3 | 484 kbps | 804 ms | iptv-org-streams, 饭太硬 |
-| CCTV-14 少儿 | 央视频道 | 3 | 1 | 1 | 2 | 533 kbps | 813 ms | iptv-org-streams, 饭太硬 |
-| CCTV-15 音乐 | 央视频道 | 4 | 2 | 1 | 3 | 696 kbps | 92 ms | iptv-org-streams, vbskycn-iptv4, 饭太硬 |
-| CCTV-17 农业农村 | 央视频道 | 4 | 1 | 0 | 1 | 789 kbps | 801 ms | iptv-org-streams |
-| 湖南卫视 | 卫视频道 | 5 | 0 | 1 | 1 | — | — | 饭太硬 |
-| 浙江卫视 | 卫视频道 | 17 | 2 | 11 | 4 | 3504 kbps | 135 ms | iptv-org-streams, zhoujie218-iptv4 |
+| CCTV-1 综合 | 央视频道 | 6 | 0 | 5 | 2 | — | — | iptv-org-streams, 饭太硬 |
+| CCTV-2 财经 | 央视频道 | 3 | 0 | 1 | 1 | — | — | 饭太硬 |
+| CCTV-3 综艺 | 央视频道 | 4 | 1 | 2 | 3 | 366 kbps | 2209 ms | iptv-org-中国, vbskycn-iptv4, 饭太硬 |
+| CCTV-4 中文国际 | 央视频道 | 3 | 0 | 2 | 2 | — | — | iptv-org-streams, 饭太硬 |
+| CCTV-5 体育 | 央视频道 | 3 | 0 | 2 | 2 | — | — | vbskycn-iptv4, 饭太硬 |
+| CCTV-5+ 体育赛事 | 央视频道 | 4 | 0 | 3 | 2 | — | — | iptv-org-streams, iptv-org-中国 |
+| CCTV-6 电影 | 央视频道 | 5 | 0 | 2 | 2 | — | — | iptv-org-中国, 饭太硬 |
+| CCTV-7 国防军事 | 央视频道 | 2 | 0 | 0 | 0 | — | — | — |
+| CCTV-8 电视剧 | 央视频道 | 5 | 1 | 2 | 3 | 2489 kbps | 71 ms | vbskycn-iptv4, zhoujie218-iptv4, 饭太硬 |
+| CCTV-9 纪录 | 央视频道 | 3 | 0 | 2 | 2 | — | — | iptv-org-中国, 饭太硬 |
+| CCTV-10 科教 | 央视频道 | 4 | 0 | 2 | 2 | — | — | iptv-org-streams, 饭太硬 |
+| CCTV-11 戏曲 | 央视频道 | 3 | 0 | 1 | 1 | — | — | 饭太硬 |
+| CCTV-12 社会与法 | 央视频道 | 4 | 1 | 2 | 3 | 4502 kbps | 413 ms | iptv-org-中国, vbskycn-iptv4, 饭太硬 |
+| CCTV-13 新闻 | 央视频道 | 5 | 1 | 2 | 3 | 329 kbps | 4869 ms | iptv-org-中国, vbskycn-iptv4, 饭太硬 |
+| CCTV-14 少儿 | 央视频道 | 3 | 0 | 1 | 1 | — | — | 饭太硬 |
+| CCTV-15 音乐 | 央视频道 | 4 | 0 | 2 | 2 | — | — | vbskycn-iptv4, 饭太硬 |
+| CCTV-17 农业农村 | 央视频道 | 4 | 0 | 0 | 0 | — | — | — |
+| 湖南卫视 | 卫视频道 | 5 | 2 | 1 | 3 | 349 kbps | 4971 ms | iptv-org-中国, vbskycn-iptv4, 饭太硬 |
+| 浙江卫视 | 卫视频道 | 18 | 4 | 11 | 6 | 2501 kbps | 344 ms | iptv-org-streams, zhoujie218-iptv4, 饭太硬 |
 | 江苏卫视 | 卫视频道 | 14 | 0 | 13 | 2 | — | — | vbskycn-iptv4, 饭太硬 |
 | 东方卫视 | 卫视频道 | 5 | 0 | 1 | 1 | — | — | 饭太硬 |
-| 北京卫视 | 卫视频道 | 4 | 0 | 3 | 2 | — | — | iptv-org-streams, 饭太硬 |
-| 广东卫视 | 卫视频道 | 3 | 0 | 1 | 1 | — | — | 饭太硬 |
-| 深圳卫视 | 卫视频道 | 14 | 1 | 12 | 3 | 1183 kbps | 92 ms | iptv-org-streams, vbskycn-iptv4, 饭太硬 |
-| 安徽卫视 | 卫视频道 | 4 | 1 | 2 | 3 | 674 kbps | 188 ms | vbskycn-iptv4, zhoujie218-iptv4, 饭太硬 |
+| 北京卫视 | 卫视频道 | 4 | 0 | 3 | 2 | — | — | iptv-org-中国, 饭太硬 |
+| 广东卫视 | 卫视频道 | 3 | 1 | 1 | 2 | 4005 kbps | 350 ms | vbskycn-iptv4, 饭太硬 |
+| 深圳卫视 | 卫视频道 | 14 | 0 | 13 | 2 | — | — | vbskycn-iptv4, 饭太硬 |
+| 安徽卫视 | 卫视频道 | 4 | 0 | 2 | 2 | — | — | zhoujie218-iptv4, 饭太硬 |
 | 山东卫视 | 卫视频道 | 13 | 0 | 12 | 2 | — | — | vbskycn-iptv4, 饭太硬 |
 | 湖北卫视 | 卫视频道 | 2 | 0 | 1 | 1 | — | — | 饭太硬 |
 | 河南卫视 | 卫视频道 | 2 | 0 | 1 | 1 | — | — | 饭太硬 |
 | 四川卫视 | 卫视频道 | 9 | 0 | 6 | 2 | — | — | iptv-org-streams, 饭太硬 |
-| 天津卫视 | 卫视频道 | 14 | 0 | 12 | 2 | — | — | iptv-org-streams, 饭太硬 |
+| 天津卫视 | 卫视频道 | 14 | 0 | 13 | 2 | — | — | vbskycn-iptv4, 饭太硬 |
 | 重庆卫视 | 卫视频道 | 1 | 0 | 0 | 0 | — | — | — |
-| 黑龙江卫视 | 卫视频道 | 5 | 1 | 3 | 3 | 621 kbps | 94 ms | vbskycn-iptv4, zhoujie218-iptv4, 饭太硬 |
+| 黑龙江卫视 | 卫视频道 | 5 | 0 | 3 | 2 | — | — | vbskycn-iptv4, 饭太硬 |
 | 东南卫视 | 卫视频道 | 4 | 0 | 2 | 2 | — | — | zhoujie218-iptv4, 饭太硬 |
 | 广东体育 | 地方频道 | 0 | 0 | 0 | 0 | — | — | — |
 | 大湾区卫视 | 地方频道 | 0 | 0 | 0 | 0 | — | — | — |
@@ -48,14 +48,14 @@
 
 这些台要么所有订阅源都没提供，要么提供的全挂了。处理方法：往 `live/sources.txt` 里再加一两个源。
 
-重庆卫视、广东体育、大湾区卫视
+CCTV-7 国防军事、CCTV-17 农业农村、重庆卫视、广东体育、大湾区卫视
 
 ## 订阅源状态
 
 | 源 | 状态 | 条数 | 耗时 | 备注 |
 | --- | --- | --- | --- | --- |
-| 饭太硬 | OK | 94 | 1070 ms | HTTP 200 |
-| iptv-org-streams | OK | 518 | 1089 ms | HTTP 200 |
-| iptv-org-中国 | OK | 156 | 1642 ms | HTTP 200 |
-| vbskycn-iptv4 | OK | 431 | 1769 ms | HTTP 200 |
-| zhoujie218-iptv4 | OK | 554 | 3883 ms | HTTP 200 |
+| iptv-org-中国 | OK | 156 | 1614 ms | HTTP 200 |
+| iptv-org-streams | OK | 518 | 5709 ms | HTTP 200 |
+| vbskycn-iptv4 | OK | 430 | 5772 ms | HTTP 200 |
+| 饭太硬 | OK | 94 | 7082 ms | HTTP 200 |
+| zhoujie218-iptv4 | OK | 554 | 10072 ms | HTTP 200 |

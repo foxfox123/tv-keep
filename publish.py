@@ -184,35 +184,37 @@ def main() -> int:
             if not ok:
                 print("   · %s 未刷新（%s）" % (p, note))
 
-    # 5) 线上核对：这才是"发布成功"的定义
+    # 5) 线上核对：如实报出线上是哪个版本，不谎报"立刻生效"
+    #    实测：jsDelivr 的 purge 接口对边缘缓存无效，@main 和无版本写法都一样，
+    #    最坏会锁 12 小时（s-maxage=43200）。所以这里只做"如实报告"。
     marker_url = "%s/version.json" % base
-    ok = False
+    live_token = ""
     for attempt in range(1, args.verify_tries + 1):
         try:
-            if token in fetch_text(marker_url, timeout=20):
-                print("[核对] 线上已是新版本（第 %d 次检查）" % attempt)
-                ok = True
+            txt = fetch_text(marker_url, timeout=20)
+            if token in txt:
+                live_token = token
                 break
-            print("[核对] 第 %d 次：线上还是旧版本，重新清缓存…" % attempt)
+            m = json.loads(txt)
+            live_token = m.get("token") or "未知"
+            if attempt < args.verify_tries:
+                print("[核对] 线上还是上一个版本（%s），%d 秒后再看…" % (m.get("time") or "?", 8))
+                time.sleep(8)
         except Exception as e:  # noqa: BLE001
-            print("[核对] 第 %d 次：取不到 version.json（%s）" % (attempt, str(e)[:50]))
-        if attempt < args.verify_tries:
-            if not args.no_purge:
-                with ThreadPoolExecutor(max_workers=4) as ex:
-                    list(ex.map(lambda p: purge_one(p, user, repo, branch),
-                                ["version.json", "multi.json"]))
-            time.sleep(4)
+            print("[核对] 暂时取不到 version.json（%s）" % str(e)[:40])
+            break
 
     print()
-    if ok:
-        print("电视上填这个地址（永远不用改）：")
-        print("  %s/multi.json" % base)
-        return 0
-
-    print("[注意] 线上还是旧版本，电视可能看到的是上一次的配置。", file=sys.stderr)
-    print("       通常 12 小时内会自己好。临时办法：把地址换成", file=sys.stderr)
-    print("       https://gcore.jsdelivr.net/gh/%s/%s/dist/multi.json" % (user, repo), file=sys.stderr)
-    return 1
+    print("电视上填这个地址（永远不用改）：")
+    print("  %s/multi.json" % base)
+    if live_token == token:
+        print("线上已是最新版本。")
+    else:
+        print("本地版本：%s" % token)
+        print("线上版本：%s" % (live_token or "取不到"))
+        print("jsDelivr 对已缓存的地址会锁最长 12 小时，加 ?t= 之类的参数也绕不过（实测）。")
+        print("所以这一版最晚半天后才会出现在电视上。配置本身没问题，只是到得晚。")
+    return 0
 
 
 if __name__ == "__main__":

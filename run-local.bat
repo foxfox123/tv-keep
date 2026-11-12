@@ -21,8 +21,8 @@ echo ==========================================
 echo   tv-keep 本地保活
 echo ==========================================
 
-rem 计划任务里的 PATH 和你终端里不一样，优先用独立安装的 Python，
-rem 避免依赖某个会随软件更新消失的路径。
+rem Scheduled tasks have a different PATH than your shell,
+rem so prefer a standalone Python install over whatever is first in PATH.
 set "PY="
 if exist "%LOCALAPPDATA%\Programs\Python\python310\python.exe" set "PY=%LOCALAPPDATA%\Programs\Python\python310\python.exe"
 if not defined PY if exist "%LOCALAPPDATA%\Programs\Python\python311\python.exe" set "PY=%LOCALAPPDATA%\Programs\Python\python311\python.exe"

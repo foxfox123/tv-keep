@@ -12,15 +12,15 @@
 ## 现在就能用的地址
 
 ```
-https://cdn.jsdelivr.net/gh/foxfox123/tv-keep@main/dist/multi.json
+https://cdn.jsdelivr.net/gh/foxfox123/tv-keep/dist/multi.json
 ```
 
 | 用途 | 地址 |
 | --- | --- |
-| **点播（用这个）** | `https://cdn.jsdelivr.net/gh/foxfox123/tv-keep@main/dist/multi.json` |
-| 点播（单仓，90 站，更纯净） | `https://cdn.jsdelivr.net/gh/foxfox123/tv-keep@main/dist/tvbox.json` |
-| 直播（m3u） | `https://cdn.jsdelivr.net/gh/foxfox123/tv-keep@main/dist/live.m3u` |
-| 直播（txt，兼容老壳） | `https://cdn.jsdelivr.net/gh/foxfox123/tv-keep@main/dist/live.txt` |
+| **点播（用这个）** | `https://cdn.jsdelivr.net/gh/foxfox123/tv-keep/dist/multi.json` |
+| 点播（单仓，90 站，更纯净） | `https://cdn.jsdelivr.net/gh/foxfox123/tv-keep/dist/tvbox.json` |
+| 直播（m3u） | `https://cdn.jsdelivr.net/gh/foxfox123/tv-keep/dist/live.m3u` |
+| 直播（txt，兼容老壳） | `https://cdn.jsdelivr.net/gh/foxfox123/tv-keep/dist/live.txt` |
 
 **影视仓里的动作**：设置 → 配置地址 → 粘贴第一条 → 保存 → 回首页进「线路选择」。直播不用单独填，点播配置的 `lives` 里已经内嵌了你自己那条 `live.m3u`。
 
@@ -29,8 +29,8 @@ https://cdn.jsdelivr.net/gh/foxfox123/tv-keep@main/dist/multi.json
 **万一这个域名在某个网络下不灵**，同一份内容换个节点就行（jsDelivr 的四个后端，缓存独立）：
 
 ```
-https://fastly.jsdelivr.net/gh/foxfox123/tv-keep@main/dist/multi.json
-https://gcore.jsdelivr.net/gh/foxfox123/tv-keep@main/dist/multi.json
+https://fastly.jsdelivr.net/gh/foxfox123/tv-keep/dist/multi.json
+https://gcore.jsdelivr.net/gh/foxfox123/tv-keep/dist/multi.json
 ```
 
 ---
@@ -74,13 +74,12 @@ https://gcore.jsdelivr.net/gh/foxfox123/tv-keep@main/dist/multi.json
 
 绝大多数时候你什么都不用做。
 
-**每天跑一次**：Win+R 输入 `taskschd.msc` → **创建基本任务**：
+**每天跑两次**（08:30 和 20:30），已经用计划任务配好了（任务名 `tv-keep`）：
 
-- 触发器：每天，时间选你**通常开着电脑**的时段（比如 08:30）
-- 操作：启动程序 → 填 `run-local.bat` 的完整路径
-- 顺手在「条件」里取消勾选"只有在计算机使用交流电源时才启动"
+- 想改时间：`taskschd.msc` → 找到 `tv-keep` → 属性 → 触发器
+- 想立即跑一次：同一个地方点「运行」，或者直接双击 `run-local.bat`
 
-`run-local.bat` 做三件事：直播真测速 → 点播探活 → 推送上线并清 CDN 缓存。
+`run-local.bat` 做三件事：直播真测速 → 点播探活 → 推送上线。
 
 电脑那天没开就不更新，电视照旧播上一次的结果，**不影响使用**。
 
@@ -90,13 +89,36 @@ https://gcore.jsdelivr.net/gh/foxfox123/tv-keep@main/dist/multi.json
 - 点播：**每条线路今天掉了多少站**；
 - 点播：**本次剔除的站点** —— 谁挂了、为什么挂。
 
-### 更新了但电视上没变？
+### 重要：更新到电视上会晚半天
 
-按这个顺序查，基本三秒定位：
+这是 jsDelivr 的硬限制，我实测过绕过的方法，都不成立，所以说清楚免得你以后怀疑是不是坏了。
 
-1. **CDN 缓存**：`publish.py` 每次推完会自动清（只清真改过的文件）。日志最后一行会写 `缓存已清 43/43`。
-2. **播放器自己的缓存**：jsDelivr 响应头里 `max-age=604800`，个别播放器会照它缓存 7 天。影视仓里「重置」或清一次应用缓存即可。这是 jsDelivr 的固定策略，改不了。
-3. **计划任务没跑**：看 `dist/` 里文件的修改时间。超过 48 小时说明任务失败了，通常是电脑没开机，或者 Python 被卸载。
+`publish.py` 推完会去线上核对版本，日志最后几行长这样：
+
+```
+本地版本：20261112191207-de30
+线上版本：20261112191135-5747
+jsDelivr 对已缓存的地址会锁最长 12 小时，加 ?t= 之类的参数也绕不过（实测）。
+```
+
+意思是：**配置本身是新的、没坏，只是 CDN 还没换过来。** 几个事实：
+
+- jsDelivr 对每个文件的响应头是 `s-maxage=43200`，即边缘缓存 12 小时；
+- 官方清缓存接口 `purge.jsdelivr.net` 对它**实测无效**：返回 `finished`，但四个节点照样给旧内容；
+- 加查询参数（`?t=123`）、换 `@main` / 不带 `@main`、换 `fastly`/`gcore` 节点，都试过，都绕不过。
+
+对使用的影响：**源挂了，最晚半天后才在电视上换掉。** 不是当天即时，但也不需要你手动做什么。
+
+如果你确实要"发布后立刻生效"，只有两条路（都不是技术问题，是托管问题）：
+
+1. 买一个域名（首年十几块）挂到已经部署好的 Cloudflare Worker 上，地址变成 `https://tv.你的域名/dist/multi.json`，改完立刻生效；
+2. 用 Gitee 建同名仓库，raw 地址是动态的、不受这个缓存影响，但需要注册账号并做实名。
+
+### 电视上没变，还有个可能
+
+播放器自己的缓存。jsDelivr 头里还有 `max-age=604800`（7 天），个别播放器会照这个缓存。影视仓里「重置」或清一次应用缓存即可。
+
+如果 `dist/` 里文件的时间超过一天没变，那是计划任务没跑成，通常是电脑没开机，或者 Python 环境被删了。看 `dist/run.log` 最后一段就知道。
 
 ---
 
