@@ -1,0 +1,5 @@
+{
+  "worker_url": "https://tv-keep.651914570.workers.dev",
+  "_说明": "部署好 Worker 后，把地址填到 worker_url，例如 https://tv-keep.你的子域.workers.dev（不要带结尾斜杠、不要带 /dist）",
+  "dist": ""
+}

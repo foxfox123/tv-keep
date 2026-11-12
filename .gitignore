@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+
+# Cloudflare 推送凭据，绝对不要提交
+cf/.token
+cf/.last-push.json
+cf/node_modules/
+cf/.wrangler/
+
+# 本地运行时产生的状态，不进仓库
+dist/*-hist.json
+dist/*-status.json

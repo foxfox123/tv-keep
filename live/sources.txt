@@ -1,0 +1,21 @@
+# 直播订阅源。一行一个，格式：备注 | 地址（备注可省）
+#
+# 下面的顺序是按实测覆盖率排的（2026-11 用 35 个频道测过）：
+#   饭太硬 index     覆盖 33/35  ← 核心源，台最全，务必留着
+#   iptv-org 中国    覆盖 24/35
+#   vbskycn ipv4     覆盖 20/35
+#   zhoujie218       覆盖 12/35
+# 多个源互为备份：某个源整体挂掉或漏台时，其他源还能兜住。
+#
+# 这里一律用 jsDelivr 镜像地址而不是 raw.githubusercontent.com ——
+# 国内网络对 raw 的解析经常失败，镜像通常没问题；万一镜像挂了，脚本会自动换回 raw 重试。
+
+饭太硬 | https://cdn.jsdelivr.net/gh/fanmingming/live@main/tv/m3u/index.m3u
+iptv-org-中国 | https://iptv-org.github.io/iptv/countries/cn.m3u
+vbskycn-iptv4 | https://cdn.jsdelivr.net/gh/vbskycn/iptv@master/tv/iptv4.m3u
+zhoujie218-iptv4 | https://live.zhoujie218.top/tv/iptv4.txt
+iptv-org-streams | https://cdn.jsdelivr.net/gh/iptv-org/iptv@master/streams/cn.m3u
+
+# IPv6 源：台很全（覆盖 31/35），画质也通常更好，但要求你的宽带和电视都支持 IPv6。
+# 不确定的话先别开；可以在电视上试试能不能播，能播再把下面这行的 # 去掉。
+# 饭太硬-ipv6 | https://cdn.jsdelivr.net/gh/fanmingming/live@main/tv/m3u/ipv6.m3u

@@ -1,0 +1,106 @@
+name: tv-keep
+
+# 每天自动跑一次。有两个细节值得知道：
+#
+# 1. GitHub 的服务器在境外，拉国内直播源的效果和你在家不一样，所以默认用
+#    probe_mode=geo_safe —— 只剔除"域名没了、404、连接被拒"这类确定已死的线路，
+#    403 和超时都当成"疑点"保留，因为在国内往往好好的。排序也不按境外测到的速度，
+#    而是按"这条线连续活了几天"。这样每天跑不会把好源一天天误删光。
+# 2. 你在家里跑 run-local.bat 时用的是 --strict，真测速；测到的速度会记进
+#    dist/live-hist.json 并提交，之后 Actions 的排序也会参考它。
+#
+# 想调时间就改 cron（UTC 时间，北京时间减 8 小时）。04:30 北京 = 20:30 UTC。
+on:
+  schedule:
+    - cron: "30 20 * * *"
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "只跑哪一侧：all / live / vod"
+        required: false
+        default: all
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: tv-keep
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: 拉取仓库
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: 准备 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 计算自己的固定地址
+        run: |
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO="${{ github.event.repository.name }}"
+          echo "TVKEEP_BASE_URL=https://${OWNER}.github.io/${REPO}/dist" >> "$GITHUB_ENV"
+          echo "本次产物的地址前缀：https://${OWNER}.github.io/${REPO}/dist"
+
+      - name: 跑直播侧
+        if: ${{ github.event.inputs.only != 'vod' }}
+        continue-on-error: true
+        run: python live/build_live.py
+
+      - name: 跑点播侧
+        if: ${{ github.event.inputs.only != 'live' }}
+        continue-on-error: true
+        run: python vod/build_vod.py
+
+      - name: 检查产物是否还存在
+        run: |
+          ok=0
+          for f in dist/live.m3u dist/tvbox.json; do
+            if [ -s "$f" ]; then echo "OK  $f"; ok=1; else echo "缺失 $f"; fi
+          done
+          if [ "$ok" = "0" ]; then
+            echo "::error::两侧都没有产出，请查看上面的日志"
+            exit 1
+          fi
+
+      - name: 提交结果
+        run: |
+          git config user.name "tv-keep-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add dist
+          if git diff --staged --quiet; then
+            echo "内容没有变化，不产生提交"
+          else
+            git commit -m "chore: refresh $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push
+          fi
+
+      - name: 打包 Pages 产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    # 没开 Pages 也不会让整次运行标红，仓库里的 dist/ 依然能通过 raw 地址访问
+    continue-on-error: true
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 发布到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

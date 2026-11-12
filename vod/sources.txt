@@ -1,0 +1,13 @@
+# 上游点播配置。一行一个，格式：备注 | 地址（备注可省）
+#
+# 最关键的用法：把你现在影视仓里正在用的那几个多仓地址，原样粘到这里。
+# 之后电视上只填一个地址（你自己的），再也不用改；线路每天自动探活、自动剔除死站。
+#
+# 这里默认用 jsDelivr 镜像，因为国内网络对 raw.githubusercontent.com 的解析经常失败。
+# 万一镜像挂了，脚本会自动换回 raw 再试一次，不用你管。
+
+牛虎多仓 | https://cdn.jsdelivr.net/gh/niubihu1/tvbox@main/tv8.json
+牛虎单仓 | https://cdn.jsdelivr.net/gh/niubihu1/tvbox@main/1.json
+
+# 想加自己的源，照着这个格式加：
+# 我的常备 | https://example.com/tvbox.json

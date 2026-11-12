@@ -1,0 +1,15 @@
+# tv-keep 的 Cloudflare Worker 配置
+# 部署：在这个目录里执行  npx wrangler deploy
+# 密钥单独设（不要写进这个文件）：npx wrangler secret put UPLOAD_TOKEN
+
+name = "tv-keep"
+main = "worker.js"
+compatibility_date = "2025-06-01"
+
+# 存产物的地方。id 是 `wrangler kv namespace create TVKEEP` 生成的，换账号要重来
+[[kv_namespaces]]
+binding = "TVKEEP"
+id = "9d49b064ff9742bbb2e9e9ef9f9c2ac9"
+
+[observability]
+enabled = true

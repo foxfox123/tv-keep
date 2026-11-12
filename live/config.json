@@ -1,0 +1,12 @@
+{
+  "probe_mode": "geo_safe",
+  "keep_per_channel": 6,
+  "workers": 24,
+  "probe_timeout": 8,
+  "min_kbps": 300,
+  "sample_bytes": 200000,
+  "max_probe_seconds": 5,
+  "min_match_score": 55,
+  "epg": "",
+  "out_name": "live"
+}

@@ -1,0 +1,12 @@
+{
+  "probe_mode": "geo_safe",
+  "workers": 24,
+  "timeout": 10,
+  "keep_sites": 90,
+  "max_per_upstream": 45,
+  "base_url": "",
+  "lives": [],
+  "flags": ["youku", "qq", "iqiyi", "qiyi", "letv", "sohu", "tudou", "pptv", "mgtv", "wasu", "bilibili"],
+  "parses": [],
+  "min_keep_sites": 5
+}
