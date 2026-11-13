@@ -23,7 +23,7 @@ https://cdn.jsdelivr.net/gh/foxfox123/tv-keep/dist/multi.json
 | 直播·移动网 | `https://cdn.jsdelivr.net/gh/foxfox123/tv-keep/dist/live-mobile.m3u` |
 | 直播（txt，兼容老壳） | `https://cdn.jsdelivr.net/gh/foxfox123/tv-keep/dist/live.txt` |
 
-**影视仓 / 宝盒里的动作**：设置 → 配置地址 → 影视仓填第一条（多仓，40 条线路）；只认单仓的壳（宝盒一类）填第二条 `tvbox.json` → 保存 → 回首页看分类。直播不用单独填，点播配置的 `lives` 里已经内嵌了两条直播源，在直播页能切换：
+**影视仓 / 宝盒里的动作**：设置 → 配置地址 → 影视仓填第一条（多仓，20 条线路）；只认单仓的壳（宝盒一类）填第二条 `tvbox.json` → 保存 → 回首页看分类。直播不用单独填，点播配置的 `lives` 里已经内嵌了两条直播源，在直播页能切换：
 
 | lives 条目 | 指向 | 什么网络下能用 |
 | --- | --- | --- |
@@ -146,11 +146,38 @@ CCTV-5 体育 | CCTV5,CCTV-5 | 央视频道
 
 ### 直播：加源 → `live/sources.txt`
 
-一行一个 `备注 | 地址`。默认 5 个源按实测覆盖率排过（饭太硬 33/35、iptv-org 24/35、vbskycn 20/35、zhoujie 12/35）。
+一行一个 `备注 | 地址`。默认按实测覆盖率排过（饭太硬 33/35、szyyds 大合集 35/35 补缺口、iptv-org 24/35）。
 
 用的是 jsDelivr 镜像而不是 `raw.githubusercontent.com`——国内对 raw 的解析经常失败。镜像挂了脚本会自动换回 raw 重试。
 
-`ipv6.m3u` 那行默认注释掉了：台更全、画质更好，但要求你的宽带和电视都支持 IPv6。能播再打开。
+`szyyds` 那份 6600 多条的大合集是补缺口用的：冷门台（CCTV-6、CCTV-11、天津、重庆、河南）只在前几个源里找不到时才会用到它。
+
+### 直播：运营商网关 → `live/gateway.json`
+
+这是画质的关键。公网源的所谓 1080P，实测码率大多在 1200–3000 kbps；而运营商 IPTV 单播网关里的流是 **CBR 恒定码率、稳定 8.8 Mbps、TTFB 150ms**，那是真正的 1080P，而且不抢带宽、晚上高峰也不掉速。
+
+```json
+{
+  "enabled": true,
+  "hosts": ["183.237.95.108:9901"],
+  "url_tpl": "http://{host}/tsfile/live/{num}_1.m3u8?key=txiptv&playlive=0&authid=0",
+  "channels": { "1013": "CCTV-1 综合", "1050": "天津卫视" }
+}
+```
+
+`channels` 是「流编号 → 台名」，编号由运营商分配。当前这份表是逐台抽帧看台标认出来的（106 个可拉流编号，认了 44 个），**换网关必须重新核对编号**，因为各省编号不一样。
+
+网关挂了怎么办：把 `hosts` 换成另一个可用地址即可，或者把 `enabled` 改成 `false`，直播就退回纯公网源（能看，但画质回到 1–3 Mbps）。
+
+### 移动网 → `live/build_mobile.py`
+
+移动的 IPv6 直播源（`2409::/16`）在电信宽带上 TCP 直接超时，**跨运营商封闭，所以在我这台机器上无法验证**。这份清单因此只做「按频道归拢 + 去重 + 排序」，不做任何存活判断，并且**把主清单里已验证的公网线路接在后面兜底**——万一移动那批全不通，至少还有得看。
+
+它不进 `run-local.bat`，需要时手动跑：
+
+```
+python live/build_mobile.py
+```
 
 ### 点播：把你正在用的地址粘进来 → `vod/sources.txt`
 
@@ -164,7 +191,7 @@ CCTV-5 体育 | CCTV5,CCTV-5 | 央视频道
 | --- | --- |
 | `probe_mode` | `geo_safe` / `strict` / `off`，见第一节 |
 | `keep_per_channel` | 每个台保留几条备用线（默认 6，可调小到 3–4） |
-| `min_kbps` | 仅 `strict` 生效：低于这个码率不采用（默认 1200）。这个值是**真实码率**（分片字节 ÷ 分片时长），不是下载速度——1080P 一般在 3000–10000，想要更严格就调到 3000 |
+| `min_kbps` | 仅 `strict` 生效：低于这个码率不采用（默认 1200）。这个值是**真实码率**（分片字节 ÷ 分片时长），不是下载速度——1080P 一般在 3000–10000。想要"只要真高清"，调到 4000；网关那批 8800 的照样进 |
 | `workers` | 并发数，网络好可加到 32 |
 | `epg` | 填了就在 m3u 里带节目单，如 `https://live.fanmingming.cn/e.xml` |
 
@@ -174,8 +201,8 @@ CCTV-5 体育 | CCTV5,CCTV-5 | 央视频道
 | --- | --- |
 | `probe_mode` | 同上 |
 | `max_per_upstream` | 每条线路最多保留几个站（默认 45） |
-| `max_repos` | 最多展开几条线路（默认 40） |
-| `max_probe_sites` | 单次最多探多少个独立 API（默认 600） |
+| `max_lines` | 最多展开几条线路（默认 20） |
+| `max_probe_sites` | 单次最多探多少个独立 API（默认 1200）。从 600 提到 1200 实测多找回 76 个真能打开的站，代价是单次多跑 4 分钟 |
 | `keep_sites` | 单仓最多保留多少站（默认 90） |
 | `min_keep_sites` | 安全阀：存活站少于这个数就不覆盖旧结果 |
 
@@ -205,11 +232,14 @@ CCTV-5 体育 | CCTV5,CCTV-5 | 央视频道
 
 | 文件 | 作用 |
 | --- | --- |
-| `net.py` | 网络层：超时、重试、GitHub raw 自动换 jsDelivr 镜像、死活分类 |
+| `net.py` | 网络层：超时、重试、GitHub raw 自动换 jsDelivr 镜像、死活分类、真实码率测量 |
 | `live/build_live.py` | 直播管道：解析 → 按频道匹配 → 探活 → 排序 → 出 m3u/txt/报告 |
+| `live/gateway.json` | 运营商 IPTV 网关的地址与「流编号 → 台名」对照表 |
+| `live/build_mobile.py` | 移动网专用清单（`live-mobile.m3u`），不参与每日自动跑 |
 | `vod/build_vod.py` | 点播管道：递归展开多仓 → 去重 → 探活 → 出单仓/多仓/报告 |
-| `publish.py` | 发布：git 提交推送 → 清 jsDelivr 缓存（只清改过的） |
-| `run-local.bat` | 一条龙：上面三个依次跑 |
+| `publish.py` | 发布：git 提交推送（远端被别人推过会自动 rebase 重试）→ 清 jsDelivr 缓存 → 核对线上版本 |
+| `run-local.bat` | 一条龙：直播 → 点播 → 发布 |
+| `tools/` | 一次性工具：抽帧认台标（`snap_channels.py`、`rebuild_grid.py`）、挖源（`harvest_iptv.py`） |
 | `cf/` | Cloudflare 那套（worker.js / push.py / wrangler.toml），**当前不用**，留作备份 |
 
 ---

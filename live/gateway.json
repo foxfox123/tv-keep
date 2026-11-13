@@ -6,6 +6,15 @@
     "183.237.95.108:9901"
   ],
   "url_tpl": "http://{host}/tsfile/live/{num}_1.m3u8?key=txiptv&playlive=0&authid=0",
+  "alt": [
+    {
+      "_说明": "另一个网关，编号完全不一样（0006 = CCTV-5+，实测 9000kbps / 60ms）。只在主表缺这个台时补位。",
+      "host": "223.78.65.165:9901",
+      "channels": {
+        "0006": "CCTV-5+ 体育赛事"
+      }
+    }
+  ],
   "channels": {
     "1013": "CCTV-1 综合",
     "1014": "CCTV-2 财经",

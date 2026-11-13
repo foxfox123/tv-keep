@@ -178,23 +178,32 @@ def load_gateway(path: str) -> dict | None:
 
 
 def gateway_candidates(gw: dict | None) -> list[dict]:
+    """把网关映射展开成候选线路。
+
+    主表 hosts + channels 共用一套编号；各运营商编号不同，所以另开 `alt`
+    数组，每个备用网关带自己的 host 和自己的 channels，互不干扰。
+    """
     out = []
     if not gw:
         return out
     tpl = gw.get("url_tpl") or ""
-    hosts = gw.get("hosts") or []
-    chans = gw.get("channels") or {}
-    if not tpl or not hosts or not chans:
-        return out
-    for host in hosts:
-        for num, name in chans.items():
-            out.append({
-                "name": name, "tvg_name": name, "logo": "", "group": "",
-                "url": tpl.format(host=host, num=num),
-                "src": "IPTV网关",
-                "label": "%s · 运营商" % name,
-                "_gw": True,
-            })
+
+    def expand(hosts, chans):
+        if not tpl or not hosts or not chans:
+            return
+        for host in hosts:
+            for num, name in chans.items():
+                out.append({
+                    "name": name, "tvg_name": name, "logo": "", "group": "",
+                    "url": tpl.format(host=host, num=num),
+                    "src": "IPTV网关",
+                    "label": "%s · 运营商" % name,
+                    "_gw": True,
+                })
+
+    expand(gw.get("hosts") or [], gw.get("channels") or {})
+    for alt in (gw.get("alt") or []):
+        expand([alt.get("host")] if alt.get("host") else [], alt.get("channels") or {})
     return out
 
 
