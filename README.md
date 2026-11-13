@@ -19,10 +19,18 @@ https://cdn.jsdelivr.net/gh/foxfox123/tv-keep/dist/multi.json
 | --- | --- |
 | **点播（用这个）** | `https://cdn.jsdelivr.net/gh/foxfox123/tv-keep/dist/multi.json` |
 | 点播（单仓，90 站，更纯净） | `https://cdn.jsdelivr.net/gh/foxfox123/tv-keep/dist/tvbox.json` |
-| 直播（m3u） | `https://cdn.jsdelivr.net/gh/foxfox123/tv-keep/dist/live.m3u` |
+| 直播·电信（运营商高清，推荐） | `https://cdn.jsdelivr.net/gh/foxfox123/tv-keep/dist/live.m3u` |
+| 直播·移动网 | `https://cdn.jsdelivr.net/gh/foxfox123/tv-keep/dist/live-mobile.m3u` |
 | 直播（txt，兼容老壳） | `https://cdn.jsdelivr.net/gh/foxfox123/tv-keep/dist/live.txt` |
 
-**影视仓 / 宝盒里的动作**：设置 → 配置地址 → 影视仓填第一条（多仓，20 条线路）；只认单仓的壳（宝盒一类）填第二条 `tvbox.json` → 保存 → 回首页看分类。直播不用单独填，点播配置的 `lives` 里已经内嵌了你自己那条 `live.m3u`。
+**影视仓 / 宝盒里的动作**：设置 → 配置地址 → 影视仓填第一条（多仓，40 条线路）；只认单仓的壳（宝盒一类）填第二条 `tvbox.json` → 保存 → 回首页看分类。直播不用单独填，点播配置的 `lives` 里已经内嵌了两条直播源，在直播页能切换：
+
+| lives 条目 | 指向 | 什么网络下能用 |
+| --- | --- | --- |
+| 直播① 运营商高清（电信） | `live.m3u` | 电信宽带（你家） |
+| 直播② 移动网备用 | `live-mobile.m3u` | 移动宽带/移动流量 |
+
+**这两条是互斥的**：电信宽带下点移动那条必然黑屏，反过来也一样。所以填地址之后，先在你实际用的网络下试第①条，不行再切第②条，不要两条混着看。
 
 > 两份配置的分工是必须的：**单仓自带 spider 和解析器**，能独立跑；**多仓靠顶层字段带一份**，切进子仓后子仓自己的 spider 生效。缺任何一边，壳里就会出现"配置导入成功、点进去没内容"。
 

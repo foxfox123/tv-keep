@@ -325,8 +325,11 @@ def main() -> int:
         kb = int(h.get("kbps", 0))
         tier = c.get("tier", 1)
         if mode == "strict":
-            # 国内实测速度是硬指标，速度优先
-            return (-c.get("kbps", 0), tier, -days, c.get("ttfb") or 9999, c["url"])
+            # 运营商网关的 CBR 专线流永远排第一：它码率固定、不抢带宽、不会因为
+            # 晚上高峰掉速；公网源偶尔能测出更高的峰值（10Mbps+），但那是瞬时值，
+            # 不代表稳定。先给用户一条不会卡的线，再谈峰值。
+            return (0 if c.get("_gw") else 1, -c.get("kbps", 0), tier,
+                    -days, c.get("ttfb") or 9999, c["url"])
         # 没有可信速度时：先把纯 IP 中转压到后面，再在同类里挑活得最久的
         return (tier, -days, -kb, -c.get("nsrc", 0), c.get("ttfb") or 9999, c["url"])
 

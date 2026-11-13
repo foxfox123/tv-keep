@@ -31,7 +31,9 @@ SOURCES = [
     ("饭太硬-高清合集", "https://cdn.jsdelivr.net/gh/fanmingming/live@main/tv/m3u/itv.m3u"),
 ]
 OUT = os.path.join(ROOT, "dist")
-KEEP_PER_CHANNEL = 8
+KEEP_PER_CHANNEL = 6
+FALLBACK_PER_CHANNEL = 3
+GATEWAY_HOST = "183.237.95.108"
 
 
 def load_channels(path: str) -> list[dict]:
@@ -56,6 +58,38 @@ def is_v6_mobile(url: str) -> bool:
     """
     host = urllib.parse.urlsplit(url).hostname or ""
     return host.startswith("2409:")
+
+
+def is_tokenized(url: str) -> bool:
+    """魔百和的 /wh7f454c46tw.../ 跳转路径带有时效 token，放后面当备选。"""
+    return "/wh7f454c46" in url
+
+
+def load_vetted(path: str) -> tuple[dict[str, list[str]], dict[str, list[str]]]:
+    """把主清单里已经实测可用的公网线路读进来，作为移动版的兜底。
+
+    移动那条线的价值是「比公网更稳」，但它没法在本机验证；万一带 token 的
+    地址全失效，兜底线路至少保证电视上有得看。运营商网关那条单独放，
+    只在某台完全没有别的线路时才拿出来用。
+    """
+    pub: dict[str, list[str]] = {}
+    gw: dict[str, list[str]] = {}
+    if not os.path.exists(path):
+        return pub, gw
+    cur = None
+    with open(path, "r", encoding="utf-8") as fh:
+        for raw in fh:
+            line = raw.strip()
+            if line.startswith("#EXTINF"):
+                cur = line.rsplit(",", 1)[-1].split(" · ")[0].strip()
+            elif line and not line.startswith("#") and cur:
+                if GATEWAY_HOST and GATEWAY_HOST in line:
+                    gw.setdefault(cur, []).append(line)
+                    continue
+                lst = pub.setdefault(cur, [])
+                if len(lst) < FALLBACK_PER_CHANNEL:
+                    lst.append(line)
+    return pub, gw
 
 
 def main() -> int:
@@ -88,7 +122,9 @@ def main() -> int:
             sc = match_score(ch, it.get("tvg_name") or it.get("name") or "")
             if sc >= 55:
                 scored.append((sc, it))
-        scored.sort(key=lambda x: (-x[0], x[1].get("src", "")))
+        # 带 wh7f454c46... 的是魔百和的加密跳转路径，里面的 token 会过期；
+        # 不带 token 的直连地址更耐用，所以同分情况下优先排前面。
+        scored.sort(key=lambda x: (-x[0], is_tokenized(x[1]["url"]), x[1].get("src", "")))
         seen_u = set()
         lines = []
         for sc, it in scored:
@@ -100,29 +136,53 @@ def main() -> int:
                 break
         picked[ch["name"]] = (ch, lines)
 
+    vetted, gw_only = load_vetted(os.path.join(OUT, "live.m3u"))
     out_path = os.path.join(OUT, "live-mobile.m3u")
     os.makedirs(OUT, exist_ok=True)
     total = 0
     cover = 0
+    n_vet = 0
+    per_ch: dict[str, int] = {}
+    picked_urls = {u for _, (c, ls) in picked.items() for u in [it["url"] for it in ls]}
     with open(out_path, "w", encoding="utf-8") as fh:
         fh.write("#EXTM3U\n")
         for name, (ch, lines) in picked.items():
-            if lines:
-                cover += 1
             for it in lines:
                 nm = "%s（移动）" % ch["name"]
                 fh.write('#EXTINF:-1 tvg-name="%s" group-title="%s",%s\n'
                          % (ch["name"], ch["group"], nm))
                 fh.write(it["url"] + "\n")
                 total += 1
+                per_ch[name] = per_ch.get(name, 0) + 1
+            for u in vetted.get(name, []):
+                if u in picked_urls:
+                    continue
+                fh.write('#EXTINF:-1 tvg-name="%s" group-title="%s",%s（公网兜底）\n'
+                         % (ch["name"], ch["group"], ch["name"]))
+                fh.write(u + "\n")
+                total += 1
+                n_vet += 1
+                per_ch[name] = per_ch.get(name, 0) + 1
+            if not lines and not vetted.get(name):
+                # 移动源和公网源都没有，只剩运营商网关那一条，总比空着强
+                for u in gw_only.get(name, [])[:1]:
+                    fh.write('#EXTINF:-1 tvg-name="%s" group-title="%s",%s（网关兜底）\n'
+                             % (ch["name"], ch["group"], ch["name"]))
+                    fh.write(u + "\n")
+                    total += 1
+                    n_vet += 1
+                    per_ch[name] = per_ch.get(name, 0) + 1
+    cover = sum(1 for v in per_ch.values() if v)
     print("[输出] %s" % out_path)
-    print("[输出] 覆盖 %d/%d 个频道，共 %d 条线路（未做任何可用性验证）" % (cover, len(channels), total))
-    miss = [n for n, (c, l) in picked.items() if not l]
+    print("[输出] 覆盖 %d/%d 个频道，共 %d 条线路（移动 %d 未验证 / 公网兜底 %d 已验证）"
+          % (cover, len(channels), total, total - n_vet, n_vet))
+    miss = [n for n in (c["name"] for c in channels) if not per_ch.get(n)]
     if miss:
         print("[缺口] " + "、".join(miss))
     with open(os.path.join(OUT, "live-mobile-report.json"), "w", encoding="utf-8") as fh:
-        json.dump({"channels": {n: len(l) for n, (c, l) in picked.items()},
-                   "total": total, "cover": cover}, fh, ensure_ascii=False, indent=1)
+        json.dump({"channels": per_ch, "total": total, "cover": cover,
+                   "vetted": n_vet, "unverified": total - n_vet},
+                  fh, ensure_ascii=False, indent=1)
     return 0
 
 

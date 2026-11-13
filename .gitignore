@@ -13,3 +13,14 @@ cf/.wrangler/
 dist/*-hist.json
 dist/*-status.json
 dist/run.log
+
+# 抽帧识别频道的中间产物，只是给人工看图用的，别塞进仓库
+dist/frames/
+dist/frames-hd/
+dist/frames-hd2/
+dist/grids/
+dist/harvest.json
+dist/harvest-pool.txt
+dist/gateway-speed.json
+dist/chmap.json
+dist/channels-id.json

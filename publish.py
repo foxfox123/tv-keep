@@ -149,9 +149,19 @@ def main() -> int:
 
     # 3) 推送
     if not args.no_push:
-        p = sh(["git", "push", "origin", "HEAD:%s" % (branch or "main")])
+        ref = "HEAD:%s" % (branch or "main")
+        p = sh(["git", "push", "origin", ref])
         if p.returncode != 0:
             err = (p.stderr or p.stdout).strip()
+            # 远端被别人推过（比如仓库里那个每日 Actions）就会 non-fast-forward。
+            # 这里先 rebase 再重试一次，否则这台机器从此永远推不上去。
+            if "rejected" in err or "fetch first" in err or "non-fast-forward" in err:
+                print("[发布] 远端有新提交，先合并再推一次")
+                r = sh(["git", "pull", "--rebase", "--autostash", "origin", branch or "main"])
+                if r.returncode == 0:
+                    p = sh(["git", "push", "origin", ref])
+                    err = (p.stderr or p.stdout).strip()
+        if p.returncode != 0:
             print("[发布] 推送失败：", file=sys.stderr)
             print(err[:600], file=sys.stderr)
             if "Permission denied" in err or "publickey" in err:

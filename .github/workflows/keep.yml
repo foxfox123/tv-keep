@@ -11,8 +11,17 @@ name: tv-keep
 #
 # 想调时间就改 cron（UTC 时间，北京时间减 8 小时）。04:30 北京 = 20:30 UTC。
 on:
-  schedule:
-    - cron: "30 20 * * *"
+  # 定时触发已关闭（2026-11-13）。
+  #
+  # 原因：这台 runner 在境外，测出来的国内直播质量不可信；而它每天 04:30
+  # 北京时间会往 dist/ 推一次，导致本机 08:30 / 20:30 那两次真实测速的结果
+  # 推不上去（non-fast-forward），线上反而变成境外那次的数据。
+  # 本地管道才是唯一可信来源，所以这里只保留手动触发，作应急后备。
+  #
+  # 应急用法：GitHub 网页 → Actions → tv-keep → Run workflow。
+  # 原来的定时是：
+  #   schedule:
+  #     - cron: "30 20 * * *"
   workflow_dispatch:
     inputs:
       only:
