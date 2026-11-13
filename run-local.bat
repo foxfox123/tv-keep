@@ -40,19 +40,24 @@ if not defined PY (
 echo 使用 Python: %PY%
 echo.
 
-echo [1/3] 直播侧（真测速，走你家宽带，比云端机器准得多）...
+echo [1/4] 直播侧（真测速，走你家宽带，比云端机器准得多）...
 "%PY%" live\build_live.py --strict
 if errorlevel 2 echo     ^(跌幅过大，已保留上次结果^)
 if errorlevel 1 if not errorlevel 2 echo     ^(本次没产出，保留上次结果^)
 
 echo.
-echo [2/3] 点播侧（严格模式，只留真能打开的站）...
+echo [2/4] 移动网清单（无法在本机验证，只做归拢 + 接公网兜底）...
+"%PY%" live\build_mobile.py
+if errorlevel 1 echo     ^(生成失败，保留上次的 live-mobile.m3u^)
+
+echo.
+echo [3/4] 点播侧（严格模式，只留真能打开的站）...
 "%PY%" vod\build_vod.py --strict
 if errorlevel 2 echo     ^(跌幅过大，已保留上次结果^)
 if errorlevel 1 if not errorlevel 2 echo     ^(本次没产出，保留上次结果^)
 
 echo.
-echo [3/3] 发布上线（推 GitHub + 清 jsDelivr 缓存）...
+echo [4/4] 发布上线（推 GitHub + 清 jsDelivr 缓存）...
 "%PY%" publish.py
 if errorlevel 1 (
   echo.
