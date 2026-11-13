@@ -321,6 +321,29 @@ def main() -> int:
                     r["ok"], r["cls"], r["kbps"], r["kind"], r["note"], r["ttfb_ms"])
                 c["height"] = r.get("height", 0)
 
+    # 网关复核：运营商网关的响应偶尔会在高并发下被挤掉（实测同一条流单测
+    # 9000kbps / 60ms，24 并发一起跑就超时）。这类源太值钱，失败了单独再试
+    # 一次，超时放宽一倍、并发压到 4，代价只有几秒。
+    retry = [c for c in todo if c.get("_gw") and c.get("cls") != "alive"]
+    if retry and mode != "off":
+        print("[复核] 网关线路 %d 条首次没测通，单独再测一次" % len(retry))
+
+        def reprobe(c):
+            return c, net.probe_stream(c["url"], timeout=cfg["probe_timeout"] * 2,
+                                       sample=cfg["sample_bytes"],
+                                       max_seconds=cfg["max_probe_seconds"] * 2, deep=deep)
+
+        fixed = 0
+        with ThreadPoolExecutor(max_workers=4) as ex:
+            for fut in as_completed([ex.submit(reprobe, c) for c in retry]):
+                c, r = fut.result()
+                if r["ok"]:
+                    c["ok"], c["cls"], c["kbps"], c["kind"] = True, "alive", r["kbps"], r["kind"]
+                    c["note"], c["ttfb"] = r["note"], r["ttfb_ms"]
+                    c["height"] = r.get("height", 0)
+                    fixed += 1
+        print("[复核] 找回 %d 条" % fixed)
+
     hist = load_hist(os.path.join(args.out, cfg["out_name"] + "-hist.json"))
 
     def rank(c: dict):
