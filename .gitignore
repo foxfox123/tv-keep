@@ -1,3 +1,7 @@
 config2.json
 verify.json
 verify2.json
+verify3.json
+config.json.prev
+last_probe.json
+logs/
