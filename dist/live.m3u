@@ -5,22 +5,26 @@ http://183.237.95.108:9901/tsfile/live/1013_1.m3u8?key=txiptv&playlive=0&authid=
 https://liveplay-srs.voc.com.cn/hls/tv/134_180adf.m3u8
 #EXTINF:-1 tvg-name="CCTV-1 综合" group-title="央视频道",CCTV-1 综合
 http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221225804/1.m3u8
+#EXTINF:-1 tvg-name="CCTV-1 综合" group-title="央视频道",CCTV-1 综合
+http://dbiptv.sn.chinamobile.com/PLTV/88888890/224/3221226231/index.m3u8
 #EXTINF:-1 tvg-name="CCTV-2 财经" group-title="央视频道",CCTV-2 财经 · 运营商
 http://183.237.95.108:9901/tsfile/live/1014_1.m3u8?key=txiptv&playlive=0&authid=0
+#EXTINF:-1 tvg-name="CCTV-2 财经" tvg-logo="https://i.imgur.com/ILamhwU.png" group-title="央视频道",CCTV-2 财经
+http://74.91.26.218:82/live/cctv2hd.m3u8
 #EXTINF:-1 tvg-name="CCTV-2 财经" group-title="央视频道",CCTV-2 财经
 http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221226195/1.m3u8
 #EXTINF:-1 tvg-name="CCTV-2 财经" group-title="央视频道",CCTV-2 财经
 http://dbiptv.sn.chinamobile.com/PLTV/88888890/224/3221226195/index.m3u8
 #EXTINF:-1 tvg-name="CCTV-3 综艺" group-title="央视频道",CCTV-3 综艺 · 运营商
 http://183.237.95.108:9901/tsfile/live/1015_1.m3u8?key=txiptv&playlive=0&authid=0
+#EXTINF:-1 tvg-name="CCTV-3 综艺" tvg-logo="https://i.imgur.com/iFlkIuw.png" group-title="央视频道",CCTV-3 综艺
+http://74.91.26.218:82/live/cctv3hd.m3u8
 #EXTINF:-1 tvg-name="CCTV-3 综艺" group-title="央视频道",CCTV-3 综艺
 http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221226397/1.m3u8
 #EXTINF:-1 tvg-name="CCTV-3 综艺" group-title="央视频道",CCTV-3 综艺
 http://dbiptv.sn.chinamobile.com/PLTV/88888890/224/3221226397/index.m3u8
 #EXTINF:-1 tvg-name="CCTV-4 中文国际" group-title="央视频道",CCTV-4 中文国际 · 运营商
 http://183.237.95.108:9901/tsfile/live/1016_1.m3u8?key=txiptv&playlive=0&authid=0
-#EXTINF:-1 tvg-name="CCTV-4 中文国际" group-title="央视频道",CCTV-4 中文国际
-http://74.91.26.218:82/live/cctv4hd.m3u8
 #EXTINF:-1 tvg-name="CCTV-4 中文国际" group-title="央视频道",CCTV-4 中文国际
 http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221226191/1.m3u8
 #EXTINF:-1 tvg-name="CCTV-4 中文国际" group-title="央视频道",CCTV-4 中文国际
@@ -33,8 +37,6 @@ http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221226395/1.m3u8
 http://dbiptv.sn.chinamobile.com/PLTV/88888890/224/3221226395/index.m3u8
 #EXTINF:-1 tvg-name="CCTV-5+ 体育赛事" group-title="央视频道",CCTV-5+ 体育赛事 · 运营商
 http://223.78.65.165:9901/tsfile/live/0006_1.m3u8?key=txiptv&playlive=0&authid=0
-#EXTINF:-1 tvg-name="CCTV-5+ 体育赛事" tvg-logo="https://tb.zbds.top/logo/CCTV5+.png" group-title="央视频道",CCTV-5+ 体育赛事
-http://223.78.65.165:9901/tsfile/live/0006_1.m3u8?key=txiptv&playlive=1&authid=0
 #EXTINF:-1 tvg-name="CCTV-5+ 体育赛事" group-title="央视频道",CCTV-5+ 体育赛事
 http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221225761/1.m3u8
 #EXTINF:-1 tvg-name="CCTV-5+ 体育赛事" group-title="央视频道",CCTV-5+ 体育赛事
@@ -89,10 +91,10 @@ http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221226190/1.m3u8
 http://dbiptv.sn.chinamobile.com/PLTV/88888890/224/3221226190/index.m3u8
 #EXTINF:-1 tvg-name="CCTV-13 新闻" group-title="央视频道",CCTV-13 新闻 · 运营商
 http://183.237.95.108:9901/tsfile/live/1025_1.m3u8?key=txiptv&playlive=0&authid=0
-#EXTINF:-1 tvg-name="CCTV-13 新闻" tvg-logo="https://i.imgur.com/6MTar6J.png" group-title="央视频道",CCTV-13 新闻
-http://74.91.26.218:82/live/cctv13hd.m3u8
 #EXTINF:-1 tvg-name="CCTV-13 新闻" tvg-logo="https://tb.zbds.top/logo/CCTV13.png" group-title="央视频道",CCTV-13 新闻
 http://ali-m-l.cztv.com/channels/lantian/channel21/1080p.m3u8
+#EXTINF:-1 tvg-name="CCTV-13 新闻" tvg-logo="https://i.imgur.com/6MTar6J.png" group-title="央视频道",CCTV-13 新闻
+http://74.91.26.218:82/live/cctv13hd.m3u8
 #EXTINF:-1 tvg-name="CCTV-13 新闻" group-title="央视频道",CCTV-13 新闻
 http://cctvwbndali.v.myalicdn.com/cctvwbnd/cctv13_2/index.m3u8
 #EXTINF:-1 tvg-name="CCTV-13 新闻" group-title="央视频道",CCTV-13 新闻
@@ -107,8 +109,6 @@ http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221226193/1.m3u8
 http://dbiptv.sn.chinamobile.com/PLTV/88888890/224/3221226193/index.m3u8
 #EXTINF:-1 tvg-name="CCTV-15 音乐" group-title="央视频道",CCTV-15 音乐 · 运营商
 http://183.237.95.108:9901/tsfile/live/1026_1.m3u8?key=txiptv&playlive=0&authid=0
-#EXTINF:-1 tvg-name="CCTV-15 音乐" tvg-logo="https://i.imgur.com/CCV0eRG.png" group-title="央视频道",CCTV-15 音乐
-http://74.91.26.218:82/live/cctv15hd.m3u8
 #EXTINF:-1 tvg-name="CCTV-15 音乐" group-title="央视频道",CCTV-15 音乐
 http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221225785/1.m3u8
 #EXTINF:-1 tvg-name="CCTV-15 音乐" group-title="央视频道",CCTV-15 音乐
@@ -138,13 +138,13 @@ http://183.237.95.108:9901/tsfile/live/1043_1.m3u8?key=txiptv&playlive=0&authid=
 #EXTINF:-1 tvg-name="浙江卫视" group-title="卫视频道",浙江卫视
 http://yncbn.ks-cdn.gitv.tv/gitv_live/G_ZHEJIANG-HQ/G_ZHEJIANG-HQ.m3u8
 #EXTINF:-1 tvg-name="浙江卫视" group-title="卫视频道",浙江卫视
-http://ali-xwl.cztv.com/live/channel011080Plxw.m3u8
+https://ali-m-l.cztv.com/channels/lantian/channel001/1080p.m3u8?
 #EXTINF:-1 tvg-name="浙江卫视" tvg-logo="https://live.fanmingming.com/tv/浙江卫视.png" group-title="卫视频道",浙江卫视
 http://ali-m-l.cztv.com/channels/lantian/channel001/1080p.m3u8
 #EXTINF:-1 tvg-name="浙江卫视" tvg-logo="https://tb.zbds.top/logo/浙江卫视.png" group-title="卫视频道",浙江卫视
 http://ali-m-l.cztv.com:80/channels/lantian/channel001/1080p.m3u8
 #EXTINF:-1 tvg-name="浙江卫视" group-title="卫视频道",浙江卫视
-https://ali-m-l.cztv.com/channels/lantian/channel001/1080p.m3u8?
+https://ali-m-l.cztv.com/channels/lantian/channel001/1080p.m3u8
 #EXTINF:-1 tvg-name="江苏卫视" group-title="卫视频道",江苏卫视 · 运营商
 http://183.237.95.108:9901/tsfile/live/1044_1.m3u8?key=txiptv&playlive=0&authid=0
 #EXTINF:-1 tvg-name="江苏卫视" group-title="卫视频道",江苏卫视
@@ -155,14 +155,14 @@ http://dbiptv.sn.chinamobile.com/PLTV/88888888/224/3221226200/1.m3u8$可回放
 http://dbiptv.sn.chinamobile.com/PLTV/88888890/224/3221225800/index.m3u8
 #EXTINF:-1 tvg-name="东方卫视" group-title="卫视频道",东方卫视 · 运营商
 http://183.237.95.108:9901/tsfile/live/1047_1.m3u8?key=txiptv&playlive=0&authid=0
-#EXTINF:-1 tvg-name="东方卫视" tvg-logo="https://tb.zbds.top/logo/东方卫视.png" group-title="卫视频道",东方卫视
-http://bp-resource-dfl.bestv.cn/155/3/video.m3u8
 #EXTINF:-1 tvg-name="东方卫视" group-title="卫视频道",东方卫视
 http://bp-resource-dfl.bestv.cn/148/3/video.m3u8
 #EXTINF:-1 tvg-name="东方卫视" tvg-logo="https://tb.zbds.top/logo/东方卫视4K.png" group-title="卫视频道",东方卫视
 https://bp-resource-dfl.bestv.cn/148/3/video.m3u8
 #EXTINF:-1 tvg-name="东方卫视" group-title="卫视频道",东方卫视
 http://yncbn.ks-cdn.gitv.tv/gitv_live/G_DONGFANG-HQ/G_DONGFANG-HQ.m3u8
+#EXTINF:-1 tvg-name="东方卫视" tvg-logo="https://tb.zbds.top/logo/东方卫视.png" group-title="卫视频道",东方卫视
+http://bp-resource-dfl.bestv.cn/155/3/video.m3u8
 #EXTINF:-1 tvg-name="东方卫视" group-title="卫视频道",东方卫视
 http://dbiptv.sn.chinamobile.com/PLTV/88888890/224/3221225797/index.m3u8
 #EXTINF:-1 tvg-name="北京卫视" group-title="卫视频道",北京卫视 · 运营商
