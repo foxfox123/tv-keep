@@ -48,7 +48,14 @@
    "channels_total": 179,
    "sources": 362,
    "reordered": 6
+  },
+  {
+   "date": "2026-11-24",
+   "channels_ok": 156,
+   "channels_total": 179,
+   "sources": 362,
+   "reordered": 4
   }
  ],
- "updated": "2026-11-23 10:42"
+ "updated": "2026-11-24 10:40"
 }
